@@ -1,18 +1,22 @@
 @charset "UTF-8";
 
-body{
-	background-color: #ffefd9;
-	overflow-x:hidden;
-}
+#body {padding:100px 60px 60px 360px;}
 
-/*사이드바 : content flex 및 gap띄우기*/
-.main_box{
-	display: flex;
-	gap:50px;
-}	
+#header {background:#eddfd7; text-align:left; padding:0px 0px 0px 360px; height:50px; position:fixed; width:100%; z-index:8000;}
+#header h2 {font-size:20px; padding:13px 0px 0px 0px; vertical-align:top;}
+#header ion-icon,
+#header span {float:left;}
+#header ion-icon {font-size:22px; color:#a98a7b; position:relative;}
+#header ion-icon:nth-child(1) {top:-1px;}
+#header span {position:relative; top:-2px; display:inline-block; padding:0px 10px 0px 10px;}
 
-/*찐 mainbox*/
-.mainbox{
-	flex-grow: 1;
-	padding-right: 50px;
-}
+ .logoutbtn{
+ float : right;
+ border: 1px solid;
+ margin-right: 20px; 
+ 
+ }
+ .logindisplay{
+ float: right;
+ margin-right: 5px; 
+ }

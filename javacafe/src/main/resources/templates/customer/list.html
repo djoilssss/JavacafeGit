@@ -3,7 +3,7 @@
     
 <head>
 <meta charset="UTF-8">
-<title>고객 리스트</title>
+<title>회원 리스트</title>
 </head>
 <body>
 	<div layout:fragment="content">
@@ -38,16 +38,13 @@
         <div class="col">
 
             <div class="card">
-                <div class="card-header">
-                    고객 리스트
-                </div>
                 <div class="card-body" >
                     <h5 class="card-title"></h5>
 
                     <table class="table">
                         <thead>
                         <tr>
-                            <th scope="col">고객 번호</th>
+                            <th scope="col">회원 번호</th>
                             <th scope="col">이름</th>
                             <th scope="col">전화번호</th>
                         </tr>
@@ -100,11 +97,11 @@
                     <h5 class="modal-title"></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <p>완료하였습니다.</p>
+                <div class="modal-body text-left">
+                    <h5 style="color:#333333;"><b>완료하였습니다.</b></h5>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">닫기</button>
+                    <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">닫기</button>
                 </div>
             </div>
         </div>

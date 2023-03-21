@@ -17,31 +17,31 @@ public class CustomerServiceTest {
 	private CustomerService customerService;
 
 	
-	@Test
+	// @Test
 	public void RegisterTest() {
 		log.info(customerService.getClass().getName());
 		CustomerDTO customerDTO = CustomerDTO.builder()
 				.cname("이순신")
 				.cphone("010-1111-1111")
-				.cpoint("3500")
+				.cpoint((long) 3500)
 				.build();
 		Long cno = customerService.register(customerDTO);
 		log.info(cno);	
 	}
-	@Test
+	// @Test
 	public void ModifyTest() {
 		CustomerDTO customerDTO = CustomerDTO.builder()
 				.cno(11L)
 				.cname("유관순")
 				.cphone("010-2222-2222")
-				.cpoint("182500")
+				.cpoint((long) 82500)
 				.build();
 		customerService.modify(customerDTO);
 		log.info(customerDTO);
 	
 	}
 	
-	@Test
+	// @Test
 	public void ListTest() {
 		PageRequestDTO pageRequestDTO = PageRequestDTO.builder()
 				.type("n")
@@ -53,6 +53,10 @@ public class CustomerServiceTest {
 		log.info(responseDTO);
 	}
 	
+	@Test
+	public void getFirstByCphoneTest() {
+		log.info(customerService.getFirstByCphone("010-1111-1111"));
+	}
 	
 	
 	

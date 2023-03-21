@@ -44,15 +44,18 @@ public class Inventory extends InvenBaseEntity  {
 	
 	@Column(nullable = false)
 	private long istate;				//입출고 상태
-
 	
-	public void change(String iname, long iprice, String iclass, String icontent, long icount, long istate) {
+	@Column(length = 200, nullable = true)
+	private String iimg;
+	
+	public void change(String iname, long iprice, String iclass, String icontent, long icount, long istate, String iimg) {
 		this.iname = iname;
 		this.iprice = iprice;
 		this.iclass = iclass;
 		this.icontent = icontent;
 		this.icount =icount;
-		this.istate = istate;		
+		this.istate = istate;
+		this.iimg = iimg;
 	}
 	
 	

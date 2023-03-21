@@ -69,6 +69,9 @@ dependencies {
    // 첨부파일이 이미지일때 용량을 줄여 작은이미지(썸네일)을 생성하고 이를 나중에 사용하도록 구성해야한다.
    // 이를위해 아래의 Thumbnailator 라이브러리를 사용하는것
    implementation 'net.coobird:thumbnailator:0.4.16'
+ 	
+ 	implementation 'org.springframework.boot:spring-boot-starter-security'
+ 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
 }
 
 tasks.named('test') {

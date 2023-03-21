@@ -14,6 +14,7 @@
 <link rel="icon" type="image/x-icon" th:href="@{/assets/favicon.ico}" />
 <!-- Core theme CSS (includes Bootstrap)-->
 <link th:href="@{/css/styles.css}" rel="stylesheet" />
+<link th:href="@{/css/staff.css}" rel="stylesheet" />
 </head>
 <body>
 	<main class="mainbg" layout:fragment="content">
@@ -72,7 +73,7 @@
 							</tr>
 						</tbody>
 					</table>
-					<div class="float-end">
+					<div class="float-end" style="padding: 15px; margin: auto">
 						<ul class="pagination flex-wrap">
 							<li class="page-item" th:if="${responseDTO.prev}">
 								<a class="page-link" th:data-num="${responseDTO.start -1}">Previous</a>

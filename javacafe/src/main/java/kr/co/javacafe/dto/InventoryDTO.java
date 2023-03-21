@@ -7,6 +7,8 @@ import java.time.LocalDateTime;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,4 +36,7 @@ public class InventoryDTO {
 	private LocalDateTime iregDate;		//입고일
 	private LocalDateTime imodDate;		//출고일
 	private long istate;				//입출고 상태
+	//이미지업로드
+	private String iimg;	
+	private MultipartFile file;
 }

@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/mainlayout.html}">
+
+<div layout:fragment="header">
+	<h2>
+		<ion-icon name="home"></ion-icon><span>HOME</span><ion-icon name="chevron-forward"></ion-icon>
+		<span>ORDER</span><ion-icon name="chevron-forward"></ion-icon>
+		<span>주문하기</span>
+	</h2>
+</div>
+
+<main class="mainbg" layout:fragment="content">
+<!-- ========================================================================================== -->
+
+<style>
+.category {margin:0px 0px 40px 0px;}
+.modal-dialog {margin-top:100px;}
+.menuList {margin:0; padding:0; opacity:0;}
+.menuList li {padding:0px 10px 10px 0px;}
+.menuList li a {display:block; cursor:pointer; background:#ffffff; border-radius: 8px; border:1px solid #dcdcdc;}
+.menuList li img {width:100%; border-radius: 6px 6px 0px 0px;}
+.menuList li p {}
+.menuList .rimg {padding:0; margin:0;}
+.menuList .rname {text-align:center; padding:30px 0px 0px 0px; margin:0; font-size:1.05em;}
+.menuList .rprice {text-align:center; padding:0px 0px 30px 0px; margin:0; font-weight:bold; font-size:1.5em;}
+
+.orderList {margin:0; padding:0;}
+.orderList li {background:#ffffff; border-radius: 8px; border:1px solid #9ec5fe; margin:0px 0px 10px 0px;}
+.orderList .rname {background:#cfe2ff; padding:15px; border-radius: 6px 6px 0px 0px; font-size:1.05em; font-weight:bold; margin:0;}
+.orderList .rname a {float:right; cursor:pointer;}
+.orderList .rname a ion-icon {font-size:26px !important;}
+.orderList .scount,
+.orderList .sprice {margin:0; padding:20px; line-height:1em; font-size:1.05em;}
+.orderList .sprice {padding-top:0; font-weight:bold;}
+.totalPrice {width:100%; font-size:1.5em; background:#f8d7da; border-radius:8px; border:1px solid #ea868f; padding:10px 10px 10px 20px; font-weight:bold; margin:0px 0px 10px 0px;}
+
+.orderModal .modal-body {padding-top:35px;}
+.orderModal .scount {text-align:center; font-size:1.5em; width:60px; padding:5px 15px 6px 15px; border-radius: 8px; border:1px solid #c8c8c8; position:relative; top:5px;}
+.orderModal .priceSum {text-align:center; font-size:1.5em; font-weight:bold; border:none; margin:10px 0px 0px 0px; padding:0;}
+</style>
+
+<div class="category">
+	<button class="btn btn-primary" onclick="printMenus(1)">커피</button>
+	<button class="btn btn-primary" onclick="printMenus(2)">티</button>
+	<button class="btn btn-primary" onclick="printMenus(3)">에이드&amp;주스</button>
+	<button class="btn btn-primary" onclick="printMenus(4)">스무디&amp;프라페</button>
+	<button class="btn btn-primary" onclick="printMenus(5)">음료</button>
+	<button class="btn btn-primary" onclick="printMenus(0)">분류 없음</button>
+</div>
+
+
+
+<table width="100%">
+<colgroup>
+	<col width="*" />
+	<col width="300px" />
+</colgroup>
+<tr style="vertical-align:top">
+	<td>
+		<ul class="menuList row row-cols-md-4">
+		</ul>
+	</td>
+	<td>
+		<ul class="orderList">
+		</ul>
+		<input type="text" class="totalPrice" value="0" readonly />
+		<div>
+			<button class="btn btn-danger btn-lg paymentBtn" style="width:49%;">주문하기</button>
+			<button class="btn btn-secondary btn-lg paymentBtn" style="width:49%;" onclick="orderRemoveAll()">모두 지우기</button>
+		</div>
+	</td>
+</tr>
+</table>
+
+<!-- ========================================================================================== 주문 모달 -->
+
+<div class="modal orderModal" id="orderModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5 orderModalTitle" id="exampleModalLabel">Action Result</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+      	<button type="button" class="btn btn-secondary btn-lg" onclick="countMinus()">-</button>
+      	<input type="text" class="scount" value="1" readonly />  
+      	<button type="button" class="btn btn-primary btn-lg" onclick="countPlus()">+</button>
+      	<p><input type="text" class="priceSum" value="0" readonly /></p>
+      	<p><input type="hidden" class="price" value="0" /></p>
+      	<p><input type="hidden" class="rno" value="" /></p>
+      	<p><input type="hidden" class="rimg" value="" /></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary orderBtn">주문</button>
+        <button type="button" class="btn btn-secondary closeOrderBtn">취소</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================================== 결제 모달 -->
+
+<div class="modal payModal" id="payModal" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+	<div class="modal-header">
+	<h1 class="modal-title fs-5 orderModalTitle" id="exampleModalLabel">Action Result</h1>
+	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+	</div>
+	<div class="modal-body text-center">
+		<p>총 결제 금액</p>
+		<p id="totalPriceTxt"></p>
+		<button type="button" class="btn btn-primary submitBtn">결제하기</button>
+	</div>
+	<div class="modal-footer">
+	</div>
+</div>
+</div>
+</div>
+
+<!-- ========================================================================================== 포인트 적립 모달 -->
+
+<div class="modal pointModal" tabindex="-1">
+<div class="modal-dialog">
+<div class="modal-content">
+	<div class="modal-header">
+	<h1 class="modal-title fs-5 orderModalTitle" id="exampleModalLabel">포인트 적립</h1>
+	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+	</div>
+	<div class="modal-body text-center">
+		<input type="text" class="cphone" value="" />
+		<button class="cphoneCheckBtn">전화번호 조회</button>
+		<button class="pointCancelBtn">적립 안함</button>
+	</div>
+	<div class="modal-footer">
+	</div>
+</div>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="/js/shop.js"></script>
+
+<!-- ========================================================================================== -->
+</main>
+
+<script layout:fragment="script" th:inline="javascript">
+/* ================================================================================ 카테고리별 목록 불러오기 */
+
+const rcate = 1
+const menuList = document.querySelector('.menuList')
+let globalDTO = null
+
+function printList(dtoList){
+	$(".menuList").animate({"opacity":"0.0"},100,"swing",function(){
+		let str = '';
+		if(dtoList && dtoList.length > 0){
+			for(const dto of dtoList){
+				if(dto.rstate==1){
+					str += `<li data-rno="${dto.rno}"><a>`
+						if(dto.rimg!=""){str += `<p class="rimg"><img src="/view/${dto.rimg}" /></p>`}
+						else {str += `<p class="rimg"><img src="/img/noimg.jpg" /></p>`}    
+					str += `<p class="rname">${dto.rname}</p>
+					    <p class="rprice">${dto.rprice.toLocaleString('ko-KR')}</p>
+					</a></li>`
+				}
+			}
+		}
+		menuList.innerHTML = str
+		addClickEvent()
+	})
+	$(".menuList").animate({"opacity":"1.0"},100)
+}
+
+function printMenus(rcate){
+	getList(rcate).then(data => {
+		console.log(data)
+		printList(data)
+	}).catch(e => {
+		console.error(e)
+	})
+}
+
+printMenus(rcate)
+
+// 데이터에 클릭 이벤트 추가
+function addClickEvent(){
+	$(".menuList li").each(function(index, item){
+		// $(item).css({"border":"1px solid #ff0000"})
+		$(item).click(function(){
+			const rno = $(item).attr("data-rno")
+			console.log(rno)
+			getOne(rno).then(dto => {
+				console.log(dto)
+				globalDTO = dto
+				document.querySelector(".rno").value = dto.rno
+				orderModalTitle.innerHTML = dto.rname
+				price.value = dto.rprice
+				priceSum.value = dto.rprice
+				document.querySelector(".rimg").value = dto.rimg
+				orderModal.show()
+			}).catch(e => alert('error'))			
+		})
+	})	
+}
+
+// 클릭 이벤트 이전 버전
+/*
+menuList.addEventListener("click", function (e){
+	e.preventDefault()
+	e.stopPropagation()
+	const target = e.target
+	console.log(target)
+	
+	if(!target || target.tagName != 'P'){
+		return
+	}
+	const rno = target.getAttribute("data-rno")
+	if(!rno){
+		return
+	}
+	getOne(rno).then(dto => {
+		console.log(dto)
+		document.querySelector(".rno").value = dto.rno
+		orderModalTitle.innerHTML = dto.rname
+		price.value = dto.rprice
+		priceSum.value = dto.rprice
+		orderModal.show()
+	}).catch(e => alert('error'))
+},false)
+*/
+
+/* ================================================================================ 주문하기 */
+
+index = 0
+const orderModal = new bootstrap.Modal(document.querySelector(".orderModal"))
+const orderModalTitle = document.querySelector(".orderModalTitle")
+const scount = document.querySelector(".scount")
+const price = document.querySelector(".price")
+const priceSum = document.querySelector(".priceSum")
+const closeOrderBtn = document.querySelector(".closeOrderBtn")
+const orderBtn = document.querySelector(".orderBtn")
+const orderList = document.querySelector(".orderList")
+const totalPrice = document.querySelector(".totalPrice")
+const orderArray = []
+const payModal = new bootstrap.Modal(document.querySelector(".payModal"))
+const paymentBtn = document.querySelector(".paymentBtn")
+const submitBtn =  document.querySelector(".submitBtn")
+
+function countPlus(){
+	scount.value = parseInt(scount.value)+1;
+	priceSum.value = parseInt(price.value)*scount.value;
+}
+function countMinus(){
+	if(parseInt(scount.value)>1){
+		scount.value = parseInt(scount.value)-1;
+	}else{
+		scount.value = 1;
+	}
+	priceSum.value = parseInt(price.value)*scount.value;
+}
+
+orderBtn.addEventListener("click", function(e) {
+	orderArray[index] = globalDTO
+	orderArray[index].scount = scount.value
+	orderArray[index].sprice = priceSum.value
+	console.log(orderArray)
+	scount.value = 1
+	price.value = 0
+	priceSum.value = 0
+	index++
+	orderModal.hide()
+	printOrders()
+}, false)
+
+function printOrders(){
+	let str = ''
+	totalPrice.value = 0
+	for(var i = 0; i<orderArray.length; i++){
+		if(orderArray[i]!=null){
+			str += '<li>'
+			str += `<p class="rname">${orderArray[i].rname} <a onclick="orderRemove(${i})"><ion-icon name="close-circle-outline"></ion-icon></a></p>`
+			str += `<p class="scount">X ${orderArray[i].scount}개 </p>`
+			str += `<p class="sprice">${orderArray[i].sprice}</p>`
+			str += '</li>'
+			totalPrice.value = parseInt(totalPrice.value)+parseInt(orderArray[i].sprice)
+		}
+	}
+	orderList.innerHTML = str
+}
+
+function orderRemove(no) {
+	orderArray[no]=null
+	printOrders()
+}
+
+function orderRemoveAll(){
+	for(var i = 0; i<orderArray.length; i++){
+		orderArray[i]=null
+	}
+	index = 0
+	printOrders()
+}
+
+closeOrderBtn.addEventListener("click", function(e) {
+	scount.value = 1
+	orderModal.hide()
+}, false)
+
+
+paymentBtn.addEventListener("click", function(e) {
+	if(parseInt(totalPrice.value) <= 0){
+		alert('1개 이상 주문해야 합니다.')
+		return
+	}
+	document.querySelector("#totalPriceTxt").innerHTML = totalPrice.value
+	payModal.show()
+	
+}, false)
+
+submitBtn.addEventListener("click", function(e) {
+
+	// 주문 번호 만들기
+	let today = new Date()
+	let year = today.getFullYear()
+	let month = String(today.getMonth() + 1)
+	let date = String(today.getDate())
+	let hh = String(today.getHours())
+	let mm = String(today.getMinutes())
+	let ss = String(today.getSeconds())
+	let todayindex = year+month.padStart(2,'0')+date.padStart(2, '0')
+	let sid = year+month.padStart(2,'0')+date.padStart(2, '0')+"-"+hh.padStart(2, '0')+mm.padStart(2, '0')+ss.padStart(2, '0')
+	
+	for(var i = 0; i<orderArray.length; i++){
+		if(orderArray[i]!=null){
+		    const shopObj = {
+	    		sid : sid,
+	            rno : orderArray[i].rno,
+	            rname : orderArray[i].rname,
+	            rprice : orderArray[i].rprice,
+	    		scount : orderArray[i].scount,
+	    		sprice : orderArray[i].sprice
+		    }
+			console.log("shopObj")
+			console.log(shopObj)
+	        addShop(shopObj).then(result => {
+	        }).catch(e => {
+	            alert("Exception...")
+	        })
+		} // end of if
+	} // end of for
+	
+	console.log("todayindex : "+todayindex)
+	
+	// 대기 번호 불러오기
+	todayOrder(todayindex).then(result => {
+		const sstoday = result.todayorder
+		const shopStateObj = {
+			sid : sid,
+			ssstate : 0,
+			sstotal : totalPrice.value,
+			sstoday : sstoday
+		}
+		// 주문 상태 저장
+		addShopState(shopStateObj).then(result => {
+		    alert("주문이 완료되었습니다. (대기번호 : "+result.sstoday+")")
+		    orderRemoveAll()
+		    payModal.hide()
+		}).catch(e => {
+		    alert("Exception...")
+		})		
+	}).catch(e => {
+		alert("Exception...")
+	});
+}, false)
+
+/* ================================================================================ 전화번호로 회원정보 조회 */
+
+const pointModal = new bootstrap.Modal(document.querySelector(".pointModal"))
+const cphone = document.querySelector(".cphone")
+const cphoneCheckBtn = document.querySelector(".cphoneCheckBtn")
+const pointCancelBtn = document.querySelector(".pointCancelBtn")
+
+cphoneCheckBtn.addEventListener("click", function(e) {
+	getCustomer(cphone.value).then(result => {
+		if(result.cno=="undefined" || result.cno==null){
+			alert("회원정보를 찾을 수 없습니다.")
+			return
+		}
+		alert(result.cno)
+	}).catch(e => {
+		alert("Exception...")
+	})
+}, false)
+
+
+</script>

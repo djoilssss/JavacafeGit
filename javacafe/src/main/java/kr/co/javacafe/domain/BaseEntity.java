@@ -1,6 +1,5 @@
 package kr.co.javacafe.domain;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
@@ -24,5 +23,5 @@ abstract class BaseEntity {
 	
 	@LastModifiedDate
 	@Column(name = "moddate")
-	private Timestamp modDate;
+	private LocalDateTime modDate;
 }

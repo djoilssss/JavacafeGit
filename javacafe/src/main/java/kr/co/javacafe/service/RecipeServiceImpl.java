@@ -10,7 +10,9 @@ import javax.transaction.Transactional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.WebUtils;
@@ -72,11 +74,20 @@ public class RecipeServiceImpl implements RecipeService {
 
 	@Override
 	public PageResponseDTO<RecipeDTO> list(PageRequestDTO pageRequestDTO) {
-		String[] types = pageRequestDTO.getTypes();
+		// String[] types = pageRequestDTO.getTypes();
+		// 검색 유형
+		String[] types = null;
+		if(pageRequestDTO.getType()!=null) {
+			types = pageRequestDTO.getType().split(",");
+		}
+		String[] states = null;
+		if(pageRequestDTO.getState()!=null) {
+			states = pageRequestDTO.getState().split(",");
+		}		
 		String keyword = pageRequestDTO.getKeyword();
 		String category = pageRequestDTO.getCategory();
 		Pageable pageable = pageRequestDTO.getPageable("rno");
-		Page<Recipe> result = recipeRepository.searchAll(types, keyword, category, pageable);
+		Page<Recipe> result = recipeRepository.searchAll(types, keyword, category, states, pageable);
 		List<RecipeDTO> dtoList = result.getContent().stream().map(recipe -> modelMapper.map(recipe, RecipeDTO.class)).collect(Collectors.toList());
 		return PageResponseDTO.<RecipeDTO>withAll()
 				.pageRequestDTO(pageRequestDTO)
@@ -106,5 +117,21 @@ public class RecipeServiceImpl implements RecipeService {
         }
 		return fileName;
 	}
+
+	@Override
+	public List<Recipe> recipeList() {
+		
+		return recipeRepository.findAll();
+	}
+
+	@Override
+	public List<RecipeDTO> getByRcate(String rcate) {
+		Pageable pageable = PageRequest.of(0, 100, Sort.by("rno").descending());
+		Page<Recipe> entitiylist = recipeRepository.findByRcate(rcate, pageable);
+		List<RecipeDTO> dtolist = entitiylist.getContent().stream().map(recipe -> modelMapper.map(recipe, RecipeDTO.class)).collect(Collectors.toList());
+		return dtolist;
+	}
+
+
 
 }

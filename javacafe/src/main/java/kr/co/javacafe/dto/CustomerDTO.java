@@ -23,7 +23,7 @@ public class CustomerDTO {
 //	고객 전화 번호
 	private String cphone;
 //	고객 포인트
-	private String cpoint;
+	private Long cpoint;
 
 	
 //	고객 가입 일자는 BaseEntity에서 가져다 사용합니다.

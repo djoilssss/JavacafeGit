@@ -94,6 +94,10 @@ input::placeholder{
 	width:50%;
 	margin: 0 auto;
 }
+.inven-modify{
+	width:50%;
+	margin: 0 auto;
+}
 
 .inven-input-group {
 	width : 90px;
@@ -112,3 +116,53 @@ input::placeholder{
     border-radius: 0.375rem;
 }
 
+.inven-img{
+	width: 80px;
+	height: 60px;
+}
+
+.inven-img-box{
+	display: block;
+	width: 100%;
+	
+}
+
+.inven-read-imgbox{
+	text-align: center;
+	padding-bottom: 15px;
+	}
+.inven-read-img{	
+	width: 300px;
+	height: 300px;
+	
+	
+}
+.input-inven{
+	align-items: center;	
+    padding: 0.375rem 6.7rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #212529;
+    text-align: center;
+    white-space: nowrap;
+    background-color: #e9ecef;
+}
+
+.inven-table{
+	width:  100%;
+
+	
+}
+    
+.inven-price-comma{
+	border: 1px solid #ced4da;
+}
+ 
+.state-radio{
+	padding-top: 10px;
+	padding-left: 20px;
+	padding-right: 20px;
+	border: 1px solid #ced4da;
+	border-radius: 0px 3px 3px 0px;
+}

@@ -43,7 +43,7 @@ public class RecipeSearchImpl extends QuerydslRepositorySupport implements Recip
 	}
 
 	@Override
-	public Page<Recipe> searchAll(String[] types, String keyword, String category, Pageable pageable) {
+	public Page<Recipe> searchAll(String[] types, String keyword, String category, String[] states, Pageable pageable) {
 		
 		QRecipe recipe = QRecipe.recipe; // Q도메인 객체
 		JPQLQuery<Recipe> query = from(recipe); // select from recipe 객체
@@ -52,14 +52,15 @@ public class RecipeSearchImpl extends QuerydslRepositorySupport implements Recip
 			// where절
 			BooleanBuilder booleanBuilder = new BooleanBuilder();
 			for(String type : types) {
+				System.out.println(type);
 				switch(type) {
-				case "n" : 
+				case "rname" : 
 					booleanBuilder.or(recipe.rname.contains(keyword));
 					break;
-				case "e" : 
+				case "reng" : 
 					booleanBuilder.or(recipe.reng.contains(keyword));
 					break;
-				case "d" : 
+				case "rdesc" : 
 					booleanBuilder.or(recipe.rdesc.contains(keyword));						
 					break;
 				} // end of switch
@@ -71,6 +72,22 @@ public class RecipeSearchImpl extends QuerydslRepositorySupport implements Recip
 		if(category != null) {
 			query.where(recipe.rcate.contains(category));
 		}
+		
+		if(states != null && states.length > 0) {
+			BooleanBuilder booleanBuilder = new BooleanBuilder();
+			for(String state : states) {
+				System.out.println(state);
+				switch(state) {
+				case "0" : 
+					booleanBuilder.or(recipe.rstate.eq(0));
+					break;
+				case "1" : 
+					booleanBuilder.or(recipe.rstate.eq(1));
+					break;
+				} // end of switch
+			} // end of for
+			query.where(booleanBuilder);
+		}// end of if		
 		
 		// rno > 0
 		query.where(recipe.rno.gt(0L));

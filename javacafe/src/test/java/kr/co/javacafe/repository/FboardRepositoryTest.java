@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
+import kr.co.javacafe.domain.Event;
 import kr.co.javacafe.domain.FBoard;
 import kr.co.javacafe.domain.Recipe;
 import lombok.extern.log4j.Log4j2;
@@ -22,6 +23,23 @@ public class FboardRepositoryTest {
 	
 	@Autowired
 	private FBoardRepository fboardRepository;
+	
+	@Autowired
+	private EventRepository eventRepository;
+	
+	@Test
+	public void testeinsert() {
+		IntStream.rangeClosed(1, 35).forEach(i->{
+			Event event = Event.builder()
+					.etitle("게시글"+i)
+					.econtent("게시글내용"+i)
+					.ewriter("관리자")
+					.build();
+			Event result = eventRepository.save(event);
+			
+				
+		});
+	}
 	
 	@Test
 	   public void testinsert() {

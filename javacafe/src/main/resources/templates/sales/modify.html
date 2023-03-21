@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+
+<!-- Thymeleaf 이용하기위해 네임스페이스 지정하기 -->
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{layout/mainlayout.html}">
+<head>
+<link rel="stylesheet" th:href="@{/css/inven.css}">
+	<title> 자바 카페 </title>
+</head>
+
+<div layout:fragment="content">
+	<div class="sales-modify">
+		<div class="col">
+			<div class="card" style="width: 50%; margin: 0 auto;">
+				<div class="card-header">
+                  <ion-icon name="bag-outline" class="inventory-icon"></ion-icon> Sales Read
+                </div>
+				<div class="card-body">
+				<form action="/sales/modify" method="post" id="f1">
+						<div class="input-group mb-3">
+							<span class="inven-input-group">매출번호</span>						
+							<input type="text" class="form-control" th:value="${dto.sno}" name="sno" readonly>
+						</div>
+						<div class="input-group mb-3">
+							<span class="inven-input-group">연도</span>
+							<input type="text" class="form-control" name="year" th:value="${dto.year}">
+						</div>					
+						<div class="input-group mb-3">
+							<span class="inven-input-group">월</span>
+							<input type="text" id="month" class="form-control" name="month" th:value="${dto.month}">							
+						</div>					
+						<div class="input-group mb-3">
+							<span class="inven-input-group">매출</span>
+							<input type="text" id="sales" class="form-control" name="sales" th:value="|${#numbers.formatInteger(dto.sales, 3, 'COMMA')}|">							
+						</div>
+						
+						<div class="my-4">
+							<div class="float-end">
+								<button type="button" class="btn btn-primary listBtn">목록</button>
+								<button type="button" class="btn btn-secondary modBtn">수정</button>
+								<button type="button" class="btn btn-danger removeBtn">삭제</button>
+							</div>
+						</div>						
+					</div>
+							
+	                        
+					</form>				
+				</div><!-- card-body end -->
+			</div> <!-- card end -->
+		</div> <!-- col end -->
+	</div> <!-- inven-modify end -->
+</div><!-- end layout:content -->
+
+<script layout:fragment="script" th:inline="javascript">
+
+
+	const errors = [[${errors}]]
+	
+	console.log(errors)
+	
+	let errorMsg = ''
+	
+	if(errors){
+		for(let i=0; i<errors.length; i++){
+			errorMsg += `${errors[i].field} = ${errors[i].code} \n`
+		}	
+	history.replaceState({},null,null)
+	alert(errorMsg)
+	}
+	
+	
+	//수정
+	const link = [[${pageRequestDTO.getLink()}]]
+	const formObj = document.querySelector("#f1")
+
+	
+	document.querySelector(".modBtn").addEventListener("click", function(e){
+	e.preventDefault()
+	e.stopPropagation()
+	
+	
+	// ,로 보여지는 iprice 값 찾아서 uncomma에 담기
+	 var input_value = document.getElementById('sales');
+	 input_value.value = uncomma(input_value.value);
+	 
+	 //uncomma에 담긴 str -> int로 변환하기
+	function uncomma(str) { 
+	    str = "" + str.replace(/,/gi, ''); // 콤마 제거 
+	    str = str.replace(/(^\s*)|(\s*$)/g, ""); // trim()공백,문자열 제거 
+	    return (new Number(str));//문자열을 숫자로 반환
+	}
+	
+	formObj.action = `/sales/modify?${link}`
+	formObj.method = 'post'
+	formObj.submit()
+	},false)
+	
+
+	
+	//삭제
+	document.querySelector(".removeBtn").addEventListener("click",function(e){
+	e.preventDefault()
+	e.stopPropagation()
+	
+	formObj.action = `/sales/remove`
+	formObj.method = 'post'
+	formObj.submit()
+	}, false)
+	
+	//목록으로 이동
+	document.querySelector(".listBtn").addEventListener("click", function(e){
+	e.preventDefault()
+	e.stopPropagation()
+	
+	formObj.reset()
+	self.location =`/sales/list?${link}`
+	}, false)
+	
+	
+															 
+	  //1000단위 콤마찍어주기
+		document.getElementById("sales").addEventListener('input', (e) => {
+		  const i = e.target;
+		  const startPosition = i.value.length - i.selectionEnd;
+		  i.value = i.value.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
+		  const len = Math.max(i.value.length - startPosition, 0);
+		  i.setSelectionRange(len, len);
+		});					    
+	
+
+	
+	
+</script>

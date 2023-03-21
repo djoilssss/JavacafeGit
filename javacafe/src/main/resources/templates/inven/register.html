@@ -3,6 +3,7 @@
 <!-- Thymeleaf 이용하기위해 네임스페이스 지정하기 -->
 <html xmlns:th="http://www.thymeleaf.org"
 	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
 	  layout:decorate="~{layout/mainlayout.html}">
 <head>
 <meta charset="UTF-8">
@@ -23,7 +24,7 @@
 					 <ion-icon name="bag-outline" class="inventory-icon"></ion-icon> Inventory Register
 				</div>
 				<div class="card-body">
-					<form action="/inven/register" method="post">
+					<form action="/inven/register" method="post" id="f1" enctype="multipart/form-data">
 						<div class="input-group mb-3">
 							<span class="inven-input-group">상품명</span>
 							<input type="text" name="iname" class="form-control" placeholder="상품명을 입력하세요">
@@ -31,12 +32,13 @@
 											
 						<div class="input-group mb-3">
 							<span class="input-group-text">상품가격</span>							
-							<input type="text" name="iprice" class="form-control" placeholder="상품가격을 입력하세요">
+							<input type="text" id="iprice" name="iprice" class="form-control" placeholder="상품가격을 입력하세요">
 						</div>
 						
 						<div class="input-group mb-3">
 							<span class="input-group-text">상품설명</span>
-							<textarea class="form-control col-sm-5" rows="5" name="icontent" placeholder="상품설명을 입력하세요"></textarea>
+							<textarea class="form-control col-sm-5" rows="5" name="icontent" placeholder="상품설명을 입력하세요"> </textarea>
+							
 						</div>					
 
 
@@ -48,14 +50,22 @@
 							<span class="input-group-text">상품분류</span>							
 							<input type="text" name="iclass" class="form-control" placeholder="상품분류를 입력하세요">
 						</div>
-				 
+						<div class="input-group mb-3">
+							<span class="input-group-text">상품상태</span>							
+							<label class="state-radio"><input type="radio" name="istate" value="1"> 입고됨</label>
+							<label class="state-radio"><input type="radio" name="istate" value="0"> 출고됨</label>
+						</div>
+						<div class="input-group mb-1">							
+							<input  type="file" id="image" name="file" class="form-control" onchange="setThumbnail(event);" />
+						</div>
+						<img class="inven-img-box" id="profileImg" >
 						
 						
 						<!-- 입력form end -->
 						<div class="my-4">
 							<div class="float-end">
-								<button type="submit" class="btn btn-primary">작성완료</button>
-								<button type="reset" class="btn btn-secondary">다시작성</button>
+								<button type="submit" class="btn btn-primary regBtn">작성완료</button>
+								<button type="button" class="btn btn-secondary listBtn">목록</button>
 							</div>
 						</div>					
 					</form>
@@ -67,8 +77,94 @@
 </div><!-- layout:content End -->
 <!-- ====================================================== -->
 <script layout:fragment="script" th:inline="javascript">
-
   
+  const auth=[[${#authentication.principal}]]
+	console.log(auth)
+	const errors =[[${errors}]]
+	console.log(errors)
+  
+  
+  
+//  const errors = /*[[${errors}]]*/'기본값';
+//  console.log(errors)
+
+  let errorMsg = ''
+
+  if(errors){
+    for (let i = 0; i < errors.length; i++) {
+      errorMsg += `${errors[i].field}은(는) ${errors[i].code} \n`
+    }
+    alert(errorMsg)
+  }
+  
+  //등록	
+	const formObj = document.querySelector("#f1")
+
+	
+	document.querySelector(".regBtn").addEventListener("click", function(e){
+	e.preventDefault()
+	e.stopPropagation()
+	
+	
+	// ,로 보여지는 iprice 값 찾아서 uncomma에 담기
+	 var input_value = document.getElementById('iprice');
+	 input_value.value = uncomma(input_value.value);
+	 
+	 //uncomma에 담긴 str -> int로 변환하기
+	function uncomma(str) { 
+	    str = "" + str.replace(/,/gi, ''); // 콤마 제거 
+	    str = str.replace(/(^\s*)|(\s*$)/g, ""); // trim()공백,문자열 제거 
+	    return (new Number(str));//문자열을 숫자로 반환
+	}
+	
+	formObj.action = `/inven/register`
+	formObj.method = 'post'
+	formObj.submit()
+	},false)
+  
+  	//목록으로 이동
+	document.querySelector(".listBtn").addEventListener("click", function(e){
+	e.preventDefault()
+	e.stopPropagation()
+
+	self.location =`/inven/list`
+	}, false)
+  
+	//이미지 미리보기
+	let fileTag = document.querySelector("input[name=file]"); //input태그 name이 file을 가져옴
+								
+	fileTag.onchange = function(){
+								
+		let imgTag = document.querySelector("#profileImg");
+									
+		//파일이 있는지 확인
+		if(fileTag.files.length >0){
+			//파일을 선택한경우 미리보기 생성 == 이미지 태그 src에 데이터를 넣어줌
+			let reader = new FileReader();
+									
+			//reader를 읽어들이는 작업(onload)이후 함수 실행, 읽어온 데이터를 함수의 매개변수 파라미터로 줄수 있다
+			reader.onload = function(data){
+			console.log(data);
+			imgTag.src = data.target.result;
+			imgTag.width = 250;
+			imgTage.height = 150;
+			}
+			reader.readAsDataURL(fileTag.files[0]);
+			}	else {
+			imgTag.src="";
+		}
+	}
+  
+  //1000단위 콤마찍어주기
+document.getElementById("iprice").addEventListener('input', (e) => {
+  const i = e.target;
+  const startPosition = i.value.length - i.selectionEnd;
+  i.value = i.value.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
+  const len = Math.max(i.value.length - startPosition, 0);
+  i.setSelectionRange(len, len);
+});
+
+
 </script>	
 </body>
 </html>

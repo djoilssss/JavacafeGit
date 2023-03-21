@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+
+<!-- Thymeleaf 이용하기위해 네임스페이스 지정하기 -->
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{layout/mainlayout.html}">
+<head>
+<link rel="stylesheet" th:href="@{/css/inven.css}">
+	<title> 자바 카페 </title>
+</head>
+
+<div layout:fragment="content">
+	<div class="sales-modify">
+		<div class="col">
+			<div class="card" style="width: 50%; margin: 0 auto;">
+				<div class="card-header">
+                  <ion-icon name="bag-outline" class="inventory-icon"></ion-icon> Admin Register
+                </div>
+				<div class="card-body">
+				<form action="/admin/join" method="post" id="f1">
+						<div class="input-group mb-3">
+							<span class="inven-input-group">ID</span>						
+							<input type="text" class="form-control" name="id">
+						</div>
+						<div class="input-group mb-3">
+							<span class="inven-input-group">PW</span>
+							<input type="password" class="form-control" name="pw">
+						</div>
+						<div class="my-4">
+							<div class="float-end">
+
+								<button type="submit" class="btn btn-secondary">등록</button>
+								<button type="button" class="btn btn-primary listBtn">목록</button>
+							</div>
+						</div>						
+					</div>
+					</form>				
+				</div><!-- card-body end -->
+			</div> <!-- card end -->
+		</div> <!-- col end -->
+	</div> <!-- inven-modify end -->
+
+</div><!-- end layout:content -->
+<script layout:fragment="script" th:inline="javascript">
+
+    
+    
+//목록으로 이동
+	document.querySelector(".mainBtn").addEventListener("click", function(e){
+	e.preventDefault()
+	e.stopPropagation()
+
+	self.location =`/`
+	}, false)
+  
+   
+</script>

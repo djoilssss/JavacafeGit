@@ -1,6 +1,6 @@
 package kr.co.javacafe.service;
 
-import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ public class RecipeServiceTest {
 	public void testRegister() {
 		log.info(recipeService.getClass().getName());
 		RecipeDTO recipeDTO = RecipeDTO.builder()
-				.rcate(0)
+				.rcate("0")
 				.rname("서비스 테스트")
 				.reng("Service Test")
 				.rdesc("테스트 소개글")
@@ -37,7 +37,7 @@ public class RecipeServiceTest {
 		// log.info("rno : "+rno);
 	}
 	
-	@Test
+	// @Test
 	public void testModifty() {
 		RecipeDTO recipeDTO = RecipeDTO.builder()
 				.rno(12L)
@@ -59,6 +59,13 @@ public class RecipeServiceTest {
 				.build();
 		PageResponseDTO<RecipeDTO> responseDTO = recipeService.list(pageRequestDTO);
 		log.info(responseDTO);
+	}
+	
+	@Test
+	public void getByRcateTest() {
+		String rcate = "0";
+		List<RecipeDTO> dtolist = recipeService.getByRcate(rcate);
+		dtolist.forEach(dto -> log.info(dto));
 	}
 	
 	

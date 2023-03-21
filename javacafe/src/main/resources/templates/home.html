@@ -1,75 +1,146 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
        layout:decorate="~{layout/mainlayout.html}">
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" th:href="@{/css/home.css}">
+	<style>
+	.l-navbar{
+	height: 100vh;
+	}
+	</style>
+	<script src="/js/home.js"></script>
+	<title>자바 카페</title>
+</head>	
 	
 
-		
-		
+	
+	
 	<main class="mainbg" layout:fragment="content">
 
-		<div   style="width:1000px; height: 300px">
-			<canvas id="myChart"></canvas>
+	<div class="main-list">
+		<div class="card sales-box">
+			<div class="card-header">
+                  <ion-icon name="cash-outline" class="home-icon"></ion-icon>
+                  Sales
+                
+                  <a th:href="|@{/sales/list}" class="home-text">
+                  <ion-icon name="file-tray-stacked-outline" class="home-icon" id="more" ></ion-icon>
+                  </a>  
+            </div>
+				<div class="home-table" >
+					<div class="data-head">
+						<ion-icon name="arrow-back-outline" class="sales-button prev"></ion-icon>
+						<div class="sales-head"> 날짜</div>
+						<ion-icon name="arrow-forward-outline" class="sales-button next"></ion-icon>
+					</div>	
+					<hr>
+					
+						<div class="sales-body">매출</div>
+							
+						<a th:href="|@{/sales/list}" class="text-decoration-none">
+							<button  type="button" class="btn btn-secondary btn-sm" >매출 리스트 전체보기</button>
+						</a>
+					
+				</div>
+	 
+				
+		</div>
+		<div class="card sales-box">	
+			<div class="card-header">
+                  <ion-icon name="trending-up-outline" class="home-icon"></ion-icon> Chart.Sales
+            </div>
+			<div class="home-chart">
+				<canvas id="myChart"></canvas>
+			</div>
+		</div>
+	</div>
+		<div class="main-list middlebox">
+		
+			<div class="card">
+				<div class="card-header">
+	                  <ion-icon name="megaphone-outline" class="home-icon"></ion-icon>
+	                  cafeRule
+	                  <a class="home-text" th:href="|@{/fboard/flist}|">
+	                  <ion-icon name="file-tray-stacked-outline" class="home-icon" id="more"></ion-icon>
+	                  </a>  
+	            </div>
+				<table class="cafeRule">
+				<colgroup>
+					<col width="80%" />
+					<col width="20%" />
+				</colgroup>			
+					<tr class="table-content" th:each="dto, i :${fboardDTO.dtoList}" th:if="${i.index<6}">
+						<td>
+							 <a class="home-text" th:href="|@{/fboard/fread(fno =${dto.fno})}&${link}|"> [[${dto.ftitle}]] </a>
+						</td>        
+						<td class="date">[[${#temporals.format(dto.regDate, 'yyyy-MM-dd' )}]]</td>					
+					</tr>
+				</table>			
+			</div>
+			
+			<div class="card event-box">
+				<div class="card-header">
+	                  <ion-icon name="cube-outline" class="home-icon"></ion-icon>
+	                  EventList
+	                   <a class="home-text" th:href="|@{/event/list}|">
+	                  <ion-icon name="file-tray-stacked-outline" class="home-icon" id="more"></ion-icon>
+	                  </a>  
+	                  
+	            </div>
+	            
+				<table class="cafeevent">
+				<colgroup>
+					<col width="80%" />
+					<col width="20%" />
+				</colgroup>
+				<tr class="table-content" th:each="dto, i :${eventDTO.dtoList}" th:if="${i.index<6}">
+					<td>
+						<a class="home-text" th:href="|@{/event/read(eno =${dto.eno})}&${link}|">[[${dto.etitle}]]</a>						
+					</td>					
+					<td class="date">[[${#temporals.format(dto.regDate, 'yyyy-MM-dd' )}]]</td>
+				</tr>
+				</table>
+			</div>
+			
+			<div class="card recipe-box">
+				<div class="card-header">
+                	<ion-icon name="dice-outline" class="home-icon"></ion-icon>
+                	Random Recipe  
+                	 <a class="home-text" th:href="|@{/recipe/list}|">
+                	<ion-icon name="file-tray-stacked-outline" class="home-icon" id="more"></ion-icon>
+                	</a>                	
+            	</div>
+				<div class="today_recipe"> </div>
+			</div>
+			
 		</div>
 		
-		<div>
-		두번째 컨텐츠
-		</div>
-		
-		<div>
-		세번째 컨텐츠
-		</div>
 		
 	</main>
 	    
-	    
-	 
-	  
+<script layout:fragment="script" th:inline="javascript">
 
-	<script layout:fragment="script" th:inline="javascript">
-	console.log('script')		
-	var ctx = document.getElementById("myChart").getContext('2d');
+		 	//중복id 입력시 alert
+	 var errorid = [[${error}]]
 
-	var myChart = new Chart(ctx, {
-	    type: 'line',
-	    data: {
-	        labels: ["1월", "2월", "3월", "4월", "5월", "6월","7월", "8월", "9월", "10월", "11월", "12월"],
-	        datasets: [{
-	            label: '매출', //차트이름
-	            fill:false, //채우기
-	            data: [12, 19, 3, 5, 2, 3,4,8,9,7,15,16],
-	            backgroundColor: [
-	                'rgba(0, 0, 0)',
-	                'rgba(0, 0, 0)',
-	                'rgba(0, 0, 0)',
-	                'rgba(0, 0, 0)',
-	                'rgba(0, 0, 0)',
-	                'rgba(0, 0, 0)',
-	                'rgba(0, 0, 0)',
-	                'rgba(0, 0, 0)',
-	                'rgba(0, 0, 0)',
-	                'rgba(0, 0, 0)',
-	                'rgba(0, 0, 0)',
-	                'rgba(0, 0, 0)'
-	            
-	              
-	            ],
-	            borderColor: [
-	                'rgba(0, 0, 0)'	          
-	            ],
-	            borderWidth: 1
-	        }]
-	    },
-	    options: {
-	        maintainAspectRatio: false, // default value. false일 경우 포함된 div의 크기에 맞춰서 그려짐.
-	        scales: {
-	            yAxes: [{
-	                ticks: {
-	                    beginAtZero:true
-	                }
-	            }]
-	        }
-	    }
-	});
-	</script>
+    if(errorid && errorid === 'id'){
+        alert("동일한 ID를 가진 계정이 존재합니다.")
+    }
+    
+    //등록완료 alert
+ 	 var regresult = [[${regresult}]]
+    if(regresult != null){
+        alert("관리자등록이 완료되었습니다")
+        console.log(regresult)
+    } 
+    //수정완료 alert
+ 	 var modresult1 = [[${result1}]]
+    if(modresult1 != null){
+        alert("수정이 완료되었습니다")
+        console.log(modresult1)
+    }
+</script>
 </html>

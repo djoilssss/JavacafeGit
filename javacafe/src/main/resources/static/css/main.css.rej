@@ -1,0 +1,21 @@
+diff a/javacafe/src/main/resources/static/css/main.css b/javacafe/src/main/resources/static/css/main.css	(rejected hunks)
+@@ -8,4 +8,16 @@
+ #header span {float:left;}
+ #header ion-icon {font-size:22px; color:#a98a7b; position:relative;}
+ #header ion-icon:nth-child(1) {top:-1px;}
+-#header span {position:relative; top:-2px; display:inline-block; padding:0px 10px 0px 10px;}
+\ No newline at end of file
++#header span {position:relative; top:-2px; display:inline-block; padding:0px 10px 0px 10px;}
++
++
++ .logoutbtn{
++ float : right;
++ border: 1px solid;
++ margin-right: 20px; 
++ 
++ }
++ .logindisplay{
++ float: right;
++ margin-right: 5px; 
++ }
+\ No newline at end of file

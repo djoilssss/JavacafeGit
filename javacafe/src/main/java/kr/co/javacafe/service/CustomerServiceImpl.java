@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
 import org.modelmapper.ModelMapper;
@@ -53,11 +54,11 @@ public class CustomerServiceImpl implements CustomerService{
 		
 		Customer customer = result.orElseThrow();
 		
-		customer.change(customerDTO.getCname(), customerDTO.getCphone(),customerDTO.getCpoint());
-		
+		customer.change(customerDTO.getCname(), customerDTO.getCphone(),customerDTO.getCpoint());		
 		customerRepository.save(customer);
 		
 	}
+
 //	고객 포인트 수정 ( 적립 )
 	@Override
 	public void modify2(CustomerDTO customerDTO) {
@@ -65,11 +66,13 @@ public class CustomerServiceImpl implements CustomerService{
 		
 		Customer customer = result.orElseThrow();
 		
-		customer.change(customerDTO.getCname(), customerDTO.getCphone(),customerDTO.getCpoint());
+		customer.change2(customerDTO.getCpoint());
 		
 		customerRepository.save(customer);
 		
 	}
+	
+
 //	고객 정보 삭제
 	@Override
 	public void remove(Long cno) {
@@ -94,5 +97,27 @@ public class CustomerServiceImpl implements CustomerService{
 				.total((int)result.getTotalElements())
 				.build();
 	}
+//	고객 포인트 수정 ( 차감 )
+	@Override
+	public void modify3(CustomerDTO customerDTO) {
+		Optional<Customer> result = customerRepository.findById(customerDTO.getCno());
+		
+		Customer customer = result.orElseThrow();
+		
+		customer.change3(customerDTO.getCpoint());
+		
+		customerRepository.save(customer);
+		
+	}
+	@Override
+	public CustomerDTO getFirstByCphone(String cphone) {
+		Customer customer = customerRepository.findFirstByCphone(cphone);
+		CustomerDTO customerDTO = null;
+		if(customer!=null) {
+			customerDTO = modelMapper.map(customer, CustomerDTO.class);
+		}
+		return customerDTO;
+	}
+
 
 }

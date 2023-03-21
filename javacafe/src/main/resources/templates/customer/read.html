@@ -3,7 +3,7 @@
     
 <head>
 <meta charset="UTF-8">
-<title>고객 정보 상세보기</title>
+<title>회원 정보</title>
 </head>
 <body>
 	<div layout:fragment="content">
@@ -11,11 +11,12 @@
         <div class="col">
             <div class="card">
                 <div class="card-header">
-                    고객 정보 상세보기
+                	<h3>[[${dto.cname}]] 님의 정보</h3>
+                	
                 </div>
                 <div class="card-body">
                     <div class="input-group mb-3">
-                        <span class="input-group-text">고객 번호</span>
+                        <span class="input-group-text">회원 번호</span>
                         <input type="text" class="form-control" th:value="${dto.cno}" readonly>
                     </div>
                     <div class="input-group mb-3">
@@ -34,18 +35,13 @@
                     </div>
 
                     <div class="input-group mb-3">
-                        <span class="input-group-text">등록된 날짜</span>
+                        <span class="input-group-text">회원가입 날짜</span>
                         <input type="text" class="form-control" th:value="${#temporals.format(dto.regDate, 'yyyy-MM-dd HH:mm:ss')}" readonly>
                     </div>
-                    <div class="input-group mb-3">
-                        <span class="input-group-text">수정된 날짜</span>
-                        <input type="text" class="form-control" th:value="${#temporals.format(dto.modDate, 'yyyy-MM-dd HH:mm:ss')}" readonly>
-                    </div>
-
                     <div class="my-4">
                         <div class="float-end" th:with="link = ${pageRequestDTO.getLink()}">
                             <a th:href="|@{/customer/list}?${link}|" class="text-decoration-none">
-                                <button type="button" class="btn btn-primary">리스트</button>
+                                <button type="button" class="btn btn-primary">이전</button>
                             </a>
                             <a th:href="|@{/customer/modify(cno=${dto.cno})}&${link}|" class="text-decoration-none">
                                 <button type="button" class="btn btn-secondary">수정하러가기</button>
@@ -56,11 +52,156 @@
             </div><!--end card-->
         </div><!-- end col-->
     </div><!-- end row-->
-</div> <!-- end layout Content -->
+    <!-- 포인트 적립 , 차감 -->
+	    <div class="row mt-3">
+	        <div class="col">
+	            <div class="card">
+				     <form action="/customer/modify2" method="post">
+			                <div class="card-body">
+			                    <div class="input-group mb-3">
+			                        
+			                        <input type="hidden" name="cno" class="form-control" th:value="${dto.cno}" readonly>
+			                    </div>
+			                    <div class="input-group mb-3">
+			                        
+			                        <input type="hidden" class="form-control" th:value="${dto.cname}" readonly>
+			                    </div>
+			
+			                    <div class="input-group mb-3">
+			                        
+			                        <input type="hidden" class="form-control" th:value="${dto.cphone}" readonly>
+			                    </div>
+			
+			                    <div class="input-group mb-3">
+			                        
+			                        <input type="hidden" class="form-control" th:value="${dto.cpoint}" readonly>
+			                    </div>
+			                    <div class="input-group mb-3">
+			                        
+			                        <input type="hidden" class="form-control" th:value="${#temporals.format(dto.modDate, 'yyyy-MM-dd HH:mm:ss')}" readonly>
+			                    </div>
+			               </div>
+			               <div class="input-group mb-3">
+		                        <span class="input-group-text" >결제 금액을 입력하세요</span>
+			                    <input id="point" type="text"/>
+			                    <button type="button" onclick="pointadd()">포인트적립</button>
+                           </div>
+			               <div>
+								<span>적립될 포인트</span>
+								<input id="pt" name="cpoint"/>
+								<button type="submit">포인트적용</button>                   
+			               </div>
+					</form>
+				
+	
+	
+               <form action="/customer/modify3" method="post">
+                <div class="card-body">
+                    <div class="input-group mb-3">
+                        
+                        <input type="hidden" name="cno" class="form-control" th:value="${dto.cno}" readonly>
+                    </div>
+                    <div class="input-group mb-3">
+                        
+                        <input type="hidden" class="form-control" th:value="${dto.cname}" readonly>
+                    </div>
+
+                    <div class="input-group mb-3">
+                       
+                        <input type="hidden" class="form-control" th:value="${dto.cphone}" readonly>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        
+                        <input type="hidden" class="form-control" th:value="${dto.cpoint}" readonly>
+                    </div>
+                    <div class="input-group mb-3">
+                        
+                        <input type="hidden" class="form-control" th:value="${#temporals.format(dto.modDate, 'yyyy-MM-dd HH:mm:ss')}" readonly>
+                    </div>
+				</div>
+					<div class="input-group mb-3">
+                  		<span class="input-group-text" >차감 금액을 입력하세요</span>
+                 		<input id="pointt" type="text"/>
+                  		<button type="button" onclick="pointsub()">포인트차감</button>
+                  		               		</div>
+            	    <div>
+                  	<span>차감후 포인트</span>
+                  	<input id="ptt" name="cpoint"/>
+                  	<button type="submit">포인트적용</button>             		
+                  	</div>
+					</form>
+			</div>
+		</div>
+	</div>
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <!-- end 적립 ,차감 -->
+    <!-- 모달 창 start -->    
+	<div class="modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-left">
+                    <h5 style="color:#333333;"><b>수정하였습니다.</b></h5>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-dark" data-bs-dismiss="modal">닫기</button>
+                </div>
+            </div>
+        </div>
+	</div>
+<!-- end 모달 창 -->    
+    
+</div><!-- end layout Content -->
 
 <!-- script start -->
 	<script layout:fragment="script" th:inline="javascript">
+	 //show modal
+    const result = [[${result}]]
 
+    const modal = new bootstrap.Modal(document.querySelector(".modal"))
+
+    if(result){
+        modal.show()
+    }
+	 
+    function pointadd(){
+        var pointadd = 0.05;
+        var point = document.getElementById("point").value;
+        var result = (point)*(pointadd);
+        document.getElementById("pt").value = result;
+      a       
+        
+    }
+    function pointsub(){
+        var cpoint = [[${dto.cpoint}]]
+        var point = document.getElementById("pointt").value;
+        var result = (cpoint)-(point);
+        document.getElementById("ptt").value = result;
+		   
+        
+	}
 
 
 	</script>

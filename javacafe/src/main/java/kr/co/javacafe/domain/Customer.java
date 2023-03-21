@@ -39,16 +39,26 @@ public class Customer extends BaseEntity{
 //	고객 포인트
 	@Column(length = 200)
 	@ColumnDefault("0") //default 0
-	private String cpoint;
+	private Long cpoint;
 	
 //	고객 가입 일자는 BaseEntity에서 가져다 사용합니다.
 
 	
-	public void change(String cname,String cphone,String cpoint) {
+	public void change(String cname,String cphone,Long cpoint) {
 		this.cname = cname;
 		this.cphone = cphone;
 		this.cpoint = cpoint;
 		
+	}
+	public void change2(Long cpoint) {
+		
+		this.cpoint += cpoint;
+		
+	}
+	
+	public void change3(Long cpoint) {
+		
+		this.cpoint = cpoint;
 	}
 	
 

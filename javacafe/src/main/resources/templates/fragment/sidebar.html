@@ -1,97 +1,115 @@
 <!DOCTYPE html>
 
 <!-- Thymeleaf 이용하기위해 네임스페이스 지정하기 -->
-<html xmlns:th="http://www.thymeleaf.org"
-xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<div th:fragment="sidebar" id="layoutSidenav">
+	<style>
+		.clock {
+			text-align: center;
+		}
+	</style>
 
-<div th:fragment="sidebar" id="layoutSidenav" >
-    <div class="l-navbar" id="navbar">
-        <nav class="nav">
-            <div>
-                <div class="nav__brand">
-                 	<ion-icon name="cafe-sharp"></ion-icon><br>
-                    <a href="#" class="nav__logo">JavaCafe</a>
-                </div>
-                <div href="#" class="nav__link collapse1 sidemenu">
-                        <ion-icon name="person-sharp" class="nav__icon "></ion-icon>
-                        <span class="nav_name">STAFF</span>
-						
-						
-                        <ion-icon name="chevron-down-sharp" class="collapse__link"></ion-icon>
+	<div class="l-navbar" id="navbar">
+		<nav class="nav overflow-auto" style="height:100%;">
+			<div>
 
-                        <ul class="collapse__menu">
-                            <li><a href="/staff/list" class="collapse__sublink">전체 인원</a></li>
-                            <li><a href="/staff/listin" class="collapse__sublink">출근 인원</a></li>
-                            <li><a href="/staff/listout" class="collapse__sublink">퇴근 인원</a></li>
-                        </ul>
-                    </div>
-                    <div href="#" class="nav__link collapse1">
-                        <ion-icon name="bag-sharp" class="nav__icon"></ion-icon>
-                        <span class="nav_name">INVENTORY</span>
-						
-						
-                        <ion-icon name="chevron-down-sharp" class="collapse__link"></ion-icon>
+				<div class="clock" id="result"></div>
+				<script>
+					const time = document.getElementById('result'); // id가 'current-time'인 요소
+					function getClock() {
+						var nowtime = new Date();
+						time.innerHTML = nowtime.toLocaleTimeString();
+					}
+					getClock();
+					setInterval(getClock, 1000);
+				</script>
 
-                        <ul class="collapse__menu">
-                            <li><a href="#" class="collapse__sublink">INVENTORY1</a></li>
-                            <li><a href="#" class="collapse__sublink">INVENTORY2</a></li>
-                            <li><a href="#" class="collapse__sublink">INVENTORY3</a></li>
-                        </ul>
-                    </div>
-                    <div href="/recipe/list" class="nav__link collapse1">
-                        <ion-icon name="file-tray-full-sharp" class="nav__icon"></ion-icon>
-                        <span class="nav_name">RECIPE</span>
-						
-						
-                        <ion-icon name="chevron-down-sharp" class="collapse__link"></ion-icon>
+				<br>
+				<div class="nav__brand">
+					<ion-icon name="cafe-sharp"></ion-icon><br>
+					<a href="/" class="nav__logo">JavaCafe</a>
+				</div>
 
-                        <ul class="collapse__menu">
-                            <li><a href="/recipe/list" class="collapse__sublink">RECIPE1</a></li>
-                            <li><a href="/recipe/list" class="collapse__sublink">RECIPE2</a></li>
-                            <li><a href="/recipe/list" class="collapse__sublink">RECIPE3</a></li>
-                        </ul>
-                    </div>
-					<div href="#" class="nav__link collapse1">
-                        <ion-icon name="people-sharp" class="nav__icon"></ion-icon>
-                        <span class="nav_name">USER</span>
-						
-						
-                        <ion-icon name="chevron-down-sharp" class="collapse__link"></ion-icon>
+				<div href="#" class="nav__link collapse1 sidemenu">
+					<ion-icon name="cart-outline" class="nav__icon"></ion-icon><span class="nav_name">SHOP</span><a
+						href="#" class="collapse__link"><ion-icon name="chevron-down-sharp"></ion-icon></a>
+					<ul class="collapse__menu">
+						<li><a th:href="@{/shop/order}" class="collapse__sublink">주문하기</a></li>
+						<li><a th:href="@{/shop/list}" class="collapse__sublink">주문 내역</a></li>
+					</ul>
+				</div>
 
-                        <ul class="collapse__menu">
-                            <li><a href="#" class="collapse__sublink">USER1</a></li>
-                            <li><a href="#" class="collapse__sublink">USER2</a></li>
-                            <li><a href="#" class="collapse__sublink">USER3</a></li>
-                        </ul>
-                    </div>
-                    
-					<div href="#" class="nav__link collapse1">
-                        <ion-icon name="chatbox-sharp" class="nav__icon"></ion-icon>
-                        <span class="nav_name">BOARD</span>
-						
-						
-                        <ion-icon name="chevron-down-sharp" class="collapse__link"></ion-icon>
+				<div href="#" class="nav__link collapse1 sidemenu">
+					<ion-icon name="person-sharp" class="nav__icon "></ion-icon><span class="nav_name">STAFF</span><a
+						href="#" class="collapse__link"><ion-icon name="chevron-down-sharp"></ion-icon></a>
+					<ul class="collapse__menu">
+						<li><a href="/staff/list" class="collapse__sublink">전체 인원</a></li>
+						<li><a href="/staff/listin" class="collapse__sublink">출근 인원</a></li>
+						<li><a href="/staff/listout" class="collapse__sublink">퇴근 인원</a></li>
+					</ul>
+				</div>
 
-                        <ul class="collapse__menu">
-<<<<<<< HEAD
-                            <a href="/fboard/flist" class="collapse__sublink">카페 규정</a>
-                            <a href="#" class="collapse__sublink">YBOARD</a>
-=======
-                            <li><a href="#" class="collapse__sublink">JBOARD</a></li>
-                            <li><a href="#" class="collapse__sublink">YBOARD</a></li>
->>>>>>> upstream/master
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </nav>
-    </div>
-</div><!-- sidebar end -->   
+				<div href="#" class="nav__link collapse1">
+					<ion-icon name="bag-sharp" class="nav__icon"></ion-icon><span class="nav_name">INVENTORY</span><a
+						href="#" class="collapse__link"><ion-icon name="chevron-down-sharp"></ion-icon></a>
+					<ul class="collapse__menu">
+						<li><a th:href="@{/inven/list}" class="collapse__sublink">물품리스트</a></li>
+						<li><a th:href="@{/inven/register}" class="collapse__sublink">물품 등록</a></li>
+					</ul>
+				</div>
 
+				<div href="#" class="nav__link collapse1">
+					<ion-icon name="cash-outline" class="nav__icon"></ion-icon><span class="nav_name">SALES</span><a
+						href="#" class="collapse__link"><ion-icon name="chevron-down-sharp"></ion-icon></a>
+					<ul class="collapse__menu">
+						<li><a th:href="@{/sales/list}" class="collapse__sublink">매출리스트</a></li>
+						<li><a th:href="@{/sales/register}" class="collapse__sublink">매출 등록</a></li>
+					</ul>
+				</div>
 
+				<div href="/recipe/list" class="nav__link collapse1">
+					<ion-icon name="file-tray-full-sharp" class="nav__icon"></ion-icon> <span
+						class="nav_name">RECIPE</span><a href="#" class="collapse__link"><ion-icon
+							name="chevron-down-sharp"></ion-icon></a>
+					<ul class="collapse__menu">
+						<li><a href="/recipe/list" class="collapse__sublink">레시피 목록</a></li>
+					</ul>
+				</div>
 
-    
+				<div href="#" class="nav__link collapse1">
+					<ion-icon name="chatbox-sharp" class="nav__icon"></ion-icon><span class="nav_name">BOARD</span><a
+						href="#" class="collapse__link"><ion-icon name="chevron-down-sharp"></ion-icon></a>
+					<ul class="collapse__menu">
+						<li><a href="/fboard/flist" class="collapse__sublink">카페 규정</a></li>
+						<li><a href="/event/list" class="collapse__sublink">이벤트</a></li>
+					</ul>
+				</div>
 
+				<div href="#" class="nav__link collapse1">
+					<ion-icon name="people-sharp" class="nav__icon"></ion-icon><span class="nav_name">USER</span><a
+						href="#" class="collapse__link"><ion-icon name="chevron-down-sharp"></ion-icon></a>
+					<ul class="collapse__menu">
+						<li><a href="/customer/list" class="collapse__sublink">회원 정보</a></li>
+						<li><a href="/customer/register" class="collapse__sublink">신규 가입</a></li>
+						<li><a href="/customer/list2" class="collapse__sublink">포인트 적립</a></li>
+						<li><a href="/customer/list3" class="collapse__sublink">포인트 차감</a></li>
+					</ul>
+				</div>
+
+				<div href="#" class="nav__link collapse1">
+					<ion-icon name="build" class="nav__icon"></ion-icon><span class="nav_name">ADMIN</span><a href="#"
+						class="collapse__link"><ion-icon name="chevron-down-sharp"></ion-icon></a>
+					<ul class="collapse__menu">
+						<li><a href="/admin/join" class="collapse__sublink">관리자 등록</a></li>
+						<li><a th:href="|@{/admin/modify(id=${#authentication.principal.username})}|"
+								class="collapse__sublink">관리자정보 수정</a></li>
+						<li><a href="/logout" class="collapse__sublink">로그아웃</a></li>
+					</ul>
+				</div>
+
+			</div>
+		</nav>
+	</div>
+</div>
 
 </html>
- 

@@ -12,9 +12,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import kr.co.javacafe.domain.FBoard;
+import kr.co.javacafe.domain.Sales;
+import kr.co.javacafe.dto.EventDTO;
 import kr.co.javacafe.dto.FBoardDTO;
+import kr.co.javacafe.dto.HomePageRequestDTO;
+import kr.co.javacafe.dto.HomePageResponseDTO;
 import kr.co.javacafe.dto.PageRequestDTO;
 import kr.co.javacafe.dto.PageResponseDTO;
+import kr.co.javacafe.dto.SalesDTO;
 import kr.co.javacafe.repository.FBoardRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -102,5 +107,24 @@ public class FBoardServiceImpl implements FBoardService {
                 .total((int)result.getTotalElements())
                 .build();
 
-    }	
+    }
+
+	@Override
+	public HomePageResponseDTO<FBoardDTO> list2(HomePageRequestDTO pageRequestDTO2) {
+		String[] types = pageRequestDTO2.getTypes();
+        String keyword = pageRequestDTO2.getKeyword();
+        Pageable pageable = pageRequestDTO2.getPageable("fno");
+
+        Page<FBoard> result = fboardRepository.searchAll(types, keyword, pageable);
+
+        List<FBoardDTO> dtoList = result.getContent().stream()
+                .map(fboard -> modelMapper.map(fboard,FBoardDTO.class)).collect(Collectors.toList());
+
+
+        return HomePageResponseDTO.<FBoardDTO>withAll()
+                .pageRequestDTO2(pageRequestDTO2)
+                .dtoList(dtoList)
+                .total((int)result.getTotalElements())
+                .build();
+	}	
 }

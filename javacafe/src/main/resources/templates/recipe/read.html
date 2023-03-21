@@ -1,13 +1,25 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/mainlayout.html}">
-       
+
+<div layout:fragment="header">
+	<h2>
+		<ion-icon name="home"></ion-icon><span>HOME</span><ion-icon name="chevron-forward"></ion-icon>
+		<span>RECIPE</span><ion-icon name="chevron-forward"></ion-icon>
+		<span>레시피 목록</span>
+	</h2>
+</div>
+      
 <main class="mainbg" layout:fragment="content">
-<!-- ================================================================================ -->
+<!-- ========================================================================================== -->
 
 <style>
 .table {background:#ffffff;}
 img {width:400px; height:400px;}
+.modal-dialog {margin-top:100px;}
 </style>
+
+<form th:action="@{/recipe/remove}" method="post" id="f1">
+<input type="hidden" name="rno" th:value="${dto.rno}" />
 <table width="100%">
 <colgroup>
 	<col width="430px" />
@@ -66,6 +78,7 @@ img {width:400px; height:400px;}
 	</td>
 </tr>
 </table>
+</form>
 
 <div th:with="link = ${pageRequestDTO.getLink()}">
 <a th:href="|@{/recipe/list}?${link}|" class="text-decoration-none">
@@ -74,10 +87,267 @@ img {width:400px; height:400px;}
 <a th:href="|@{/recipe/register(rno=${dto.rno})}&${link}|" class="text-decoration-none">
     <button type="button" class="btn btn-secondary">Modify</button>
 </a>
+<button type="button" class="btn btn-danger removeBtn">삭제</button>
 </div>
 
-<!-- ================================================================================ -->
+<button class="btn btn-info addStockBtn">재료 추가</button>
+
+<table class="table table-bordered">
+<colgroup>
+	<col width="10%" />
+	<col width="35%" />
+	<col width="35%" />
+	<col width="10%" />
+	<col width="10%" />
+</colgroup>
+<thead>
+<tr class="table-secondary">
+	<th class="text-center">#</th>
+	<th class="text-center">재료 이름</th>
+	<th class="text-center">필요 수량</th>
+	<th class="text-center">현재 재고</th>
+	<th class="text-center">재고 상태</th>
+</tr>
+</thead>
+<tbody class="stockList">
+</tbody>
+</table>
+
+<!-- ========================================================================================== 작성 모달 -->
+<!-- Modal -->
+<div class="modal registerModal" id="registerModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Action Result</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="input-group">
+        	<span class="input-group-text">Stock Number</span>
+        	<input type="text" class="form-control rsnumber" />
+        </div>
+        <div class="input-group">
+        	<span class="input-group-text">Inventory Item</span>
+        	<select class="form-control ino" name="ino">
+        	<option th:each="dto:${invenlist}" th:value="${dto.ino}">[[${dto.iname}]]<option>
+        	</select>
+        </div>               
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary registerBtn">Register</button>
+        <button type="button" class="btn btn-secondary closeRegisterBtn">Close</button>
+        <!-- <button type="button" class="btn btn-primary">Save changes</button>-->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================================================================================== 수정 모달 -->
+
+<div class="modal modifyModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title modifyHeader"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group mb-3">
+                    <span class="input-group-text">Reply Text</span>
+                    <input type="text" class="form-control modifyText" >
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info modifyBtn">Modify</button>
+                <button type="button" class="btn btn-danger removeBtn">Remove</button>
+                <button type="button" class="btn btn-outline-dark closeModifyBtn">Close</button>
+            </div>
+        </div>
+    </div>
+</div> <!--modifyModal -->
+
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="/js/recipe.js"></script>
+
+<!-- ========================================================================================== -->
 </main>
 
 <script layout:fragment="script" th:inline="javascript">
+
+menuActive(4)
+
+const errors = [[${errors}]]
+console.log(errors)
+
+let errorMsg = ''
+
+if(errors){
+    for (let i = 0; i < errors.length; i++) {
+        errorMsg += `${errors[i].field}은(는) ${errors[i].code} \n`
+    }
+    history.replaceState({}, null, null)
+    alert(errorMsg)
+}
+
+const link = [[${pageRequestDTO.getLink()}]]
+const formObj = document.querySelector("#f1")
+
+document.querySelector(".removeBtn").addEventListener("click", function(e){
+    e.preventDefault()
+    e.stopPropagation()
+
+    formObj.action = `/recipe/remove`
+    formObj.method ='post'
+    formObj.submit()
+}, false)
+
+/* ================================================================================ 재고 목록 */
+
+const rno = [[${dto.rno}]]
+const stockList = document.querySelector('.stockList')
+
+// 댓글 목록 출력
+function printList(dtoList){
+	let str = '';
+	if(dtoList && dtoList.length > 0){
+		for(const dto of dtoList){
+			str += `<tr>
+				<td>${dto.rsno}</td>
+				<td data-rsno="${dto.rsno}">${dto.iname}</td>
+				<td>${dto.rsnumber}</td>
+				<td>${dto.icount}</td>
+				<td>${dto.istate}</td>
+				</tr>`
+		}
+	}
+	stockList.innerHTML = str
+}
+
+// axios로 데이터 불러오기 => 댓글 목록, 페이징 출력
+function printStocks(){
+	getList(rno).then(
+			data => {
+				console.log(data)
+				printList(data)
+			}).catch(e => {
+				console.error(e)
+			})
+}
+
+printStocks()
+
+/* ================================================================================ 재고 등록 */
+
+const registerModal = new bootstrap.Modal(document.querySelector(".registerModal"))
+const rsnumber = document.querySelector(".rsnumber")
+const ino = document.querySelector(".ino")
+const registerBtn = document.querySelector(".registerBtn")
+const closeRegisterBtn = document.querySelector(".closeRegisterBtn")
+
+document.querySelector(".addStockBtn").addEventListener("click", function (e){
+    registerModal.show()
+},false)
+
+closeRegisterBtn.addEventListener("click", function(e){
+	registerModal.hide()
+},false)
+
+registerBtn.addEventListener("click", function(e){
+	const stockObj = {
+			rno : rno,
+			rsnumber : rsnumber.value,
+			ino : ino.value}
+	duplicateCheck(stockObj).then(result => {
+		if(result.rsno>0){
+			if (!confirm("이미 존재하는 아이템입니다. 필요 수량을 수정하시겠습니까?")) {
+			       return
+			} else {
+				console.log(stockObj)
+				modifyObj = {
+					rsno : result.rsno,
+					rsnumber : rsnumber.value
+				}
+				modifyStock(modifyObj).then(result => {
+					console.log(modifyObj)
+					alert(result.rsno+'번 재고 상태가 수정되었습니다.');
+					registerModal.hide()
+					rsnumber.value=''
+					ino.value=''
+					printStocks()
+				}).catch(e => {
+					console.log(e)
+				})
+			}
+		}else{		
+			console.log("등록 가능")
+			addStock(stockObj).then(result => {
+				alert(result.rsno)
+				registerModal.hide()
+				rsnumber.value=''
+				ino.value=''
+					printStocks()
+			}).catch(e => {
+				alert("Exception...")
+			})	
+		}
+	}).catch(e => {
+		alert("Exception...")
+	})
+}, false)
+
+/* ================================================================================ 재고 수정 */
+ 
+const modifyModal = new bootstrap.Modal(document.querySelector(".modifyModal"))
+const modifyHeader = document.querySelector(".modifyHeader")
+const modifyText = document.querySelector(".modifyText")
+const modifyBtn = document.querySelector(".modifyBtn")
+const removeBtn = document.querySelector(".removeBtn")
+const closeModifyBtn = document.querySelector(".closeModifyBtn")
+
+stockList.addEventListener("click", function (e){
+	e.preventDefault()
+	e.stopPropagation()
+	
+	const target = e.target
+	
+	if(!target || target.tagName != 'TD'){
+		return
+	}
+	
+	const rsno = target.getAttribute("data-rsno")
+	
+	if(!rsno){
+		return
+	}
+	
+	getStock(rsno).then(stock => {
+		console.log(stock)
+		modifyHeader.innerHTML = stock.rsno
+		modifyText.value = stock.rsnumber
+		modifyModal.show()
+	}).catch(e => alert('error'))
+},false)
+
+modifyBtn.addEventListener("click", function(e){
+	// rsno 상수선언했던거 왜 안넘어오는지 알 수 X
+	const stockObj = {
+			rsno : parseInt(modifyHeader.innerHTML),
+			rsnumber : modifyText.value
+	}
+	console.log("stockObj")
+	console.log(stockObj)
+	modifyStock(stockObj).then(result => {
+		alert(result.rsno+'번 재고 상태가 수정되었습니다.');
+		modifyText.value = ''
+		modifyModal.hide()
+		printStocks()
+	}).catch(e => {
+		console.log(e)
+	})
+},false)
+
+closeModifyBtn.addEventListener("click", function(e) {
+	modifyModal.hide()
+}, false)
 </script>

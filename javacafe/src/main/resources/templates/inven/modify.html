@@ -10,14 +10,14 @@
 </head>
 
 <div layout:fragment="content">
-	<div class="row mt-3">
+	<div class="inven-modify">
 		<div class="col">
 			<div class="card">
 				<div class="card-header">
                   <ion-icon name="bag-outline" class="inventory-icon"></ion-icon> Invetory Read
                 </div>
 				<div class="card-body">
-				<form th:action="@{/inven/modify}" method="post" id="f1">
+				<form action="/inven/modify" method="post" id="f1" enctype="multipart/form-data">
 						<div class="input-group mb-3">
 							<span class="input-group-text">상품번호</span>						
 							<input type="text" class="form-control" th:value="${dto.ino}" name="ino" readonly>
@@ -28,7 +28,7 @@
 						</div>					
 						<div class="input-group mb-3">
 							<span class="input-group-text">상품가격</span>
-							<input type="text" class="form-control" name="iprice" th:value="${dto.iprice}">
+							<input type="text" id="iprice" class="form-control" name="iprice" th:value="|${#numbers.formatInteger(dto.iprice, 3, 'COMMA')}|">							
 						</div>					
 						<div class="input-group mb-3">
 							<span class="input-group-text">상품설명</span>
@@ -43,6 +43,11 @@
 							<input type="text" class="form-control" th:value="${dto.iclass}" name="iclass">
 						</div>
 						<div class="input-group mb-3">
+							<span class="input-group-text">상품상태</span>							
+							<label class="state-radio"><input type="radio" name="istate" value="1"> 입고됨</label>
+							<label class="state-radio"><input type="radio" name="istate" value="0"> 출고됨</label>
+						</div>
+						<div class="input-group mb-3">
 							<span class="input-group-text">입고일자</span>	
 							<input type="text" class="form-control" 
 							th:value="${#temporals.format(dto.iregDate, 'yyyy-MM-dd HH:mm:ss')}" readonly>
@@ -52,22 +57,32 @@
 							<input type="text" class="form-control" 
 							th:value="${#temporals.format(dto.imodDate, 'yyyy-MM-dd HH:mm:ss')}" readonly>
 						</div>
+						<div class="input-group mb-1">							
+							<input  type="file" id="image" name="file" class="form-control" onchange="setThumbnail(event);" />
+						</div>
+						<img class="inven-img-box" id="profileImg" >
+							
+						    
 						<div class="my-4">
 							<div class="float-end">
-								<button type="button" class="bnt btn-primary listBtn">목록</button>
+								<button type="button" class="btn btn-primary listBtn">목록</button>
 								<button type="button" class="btn btn-secondary modBtn">수정</button>
 								<button type="button" class="btn btn-danger removeBtn">삭제</button>
 							</div>
 						</div>						
+					</div>
+							
+	                        
 					</form>				
 				</div><!-- card-body end -->
 			</div> <!-- card end -->
 		</div> <!-- col end -->
-	</div> <!-- row end -->
+	</div> <!-- inven-modify end -->
 </div><!-- end layout:content -->
 
 <script layout:fragment="script" th:inline="javascript">
 
+ 	
 
 	const errors = [[${errors}]]
 	
@@ -77,7 +92,7 @@
 	
 	if(errors){
 		for(let i=0; i<errors.length; i++){
-			errorMsg += `${errors[i].field}은(는) ${errors[i].code} \n`
+			errorMsg += `${errors[i].field} = ${errors[i].code} \n`
 		}	
 	history.replaceState({},null,null)
 	alert(errorMsg)
@@ -87,15 +102,30 @@
 	//수정
 	const link = [[${pageRequestDTO.getLink()}]]
 	const formObj = document.querySelector("#f1")
+
 	
 	document.querySelector(".modBtn").addEventListener("click", function(e){
 	e.preventDefault()
 	e.stopPropagation()
 	
+	
+	// ,로 보여지는 iprice 값 찾아서 uncomma에 담기
+	 var input_value = document.getElementById('iprice');
+	 input_value.value = uncomma(input_value.value);
+	 
+	 //uncomma에 담긴 str -> int로 변환하기
+	function uncomma(str) { 
+	    str = "" + str.replace(/,/gi, ''); // 콤마 제거 
+	    str = str.replace(/(^\s*)|(\s*$)/g, ""); // trim()공백,문자열 제거 
+	    return (new Number(str));//문자열을 숫자로 반환
+	}
+	
 	formObj.action = `/inven/modify?${link}`
 	formObj.method = 'post'
 	formObj.submit()
 	},false)
+	
+
 	
 	//삭제
 	document.querySelector(".removeBtn").addEventListener("click",function(e){
@@ -115,4 +145,40 @@
 	formObj.reset()
 	self.location =`/inven/list?${link}`
 	}, false)
+	
+	//이미지 미리보기
+	let fileTag = document.querySelector("input[name=file]"); //input태그 name이 file을 가져옴
+								
+	fileTag.onchange = function(){
+								
+		let imgTag = document.querySelector("#profileImg");
+									
+		//파일이 있는지 확인
+		if(fileTag.files.length >0){
+			//파일을 선택한경우 미리보기 생성 == 이미지 태그 src에 데이터를 넣어줌
+			let reader = new FileReader();
+									
+			//reader를 읽어들이는 작업(onload)이후 함수 실행, 읽어온 데이터를 함수의 매개변수 파라미터로 줄수 있다
+			reader.onload = function(data){
+			console.log(data);
+			imgTag.src = data.target.result;
+			imgTag.width = 250;
+			imgTage.height = 150;
+			}
+			reader.readAsDataURL(fileTag.files[0]);
+			}	else {
+			imgTag.src="";
+		}
+	}
+															 
+	  //1000단위 콤마찍어주기
+		document.getElementById("iprice").addEventListener('input', (e) => {
+		  const i = e.target;
+		  const startPosition = i.value.length - i.selectionEnd;
+		  i.value = i.value.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
+		  const len = Math.max(i.value.length - startPosition, 0);
+		  i.setSelectionRange(len, len);
+		});					    
+
+	
 </script>

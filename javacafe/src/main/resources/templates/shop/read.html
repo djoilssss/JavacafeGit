@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/mainlayout.html}">
+
+<div layout:fragment="content">
+<!-- ========================================================================================== -->
+
+<style>
+table {background:#ffffff;}
+table.center th,
+table.center td {text-align:center;}
+</style>
+
+<table class="table table-bordered center" th:with="menucount = ${0}">
+<colgroup>
+	<col width="16.70%" />
+	<col width="16.66%" />
+	<col width="16.66%" />
+	<col width="16.66%" />
+	<col width="16.66%" />
+	<col width="16.66%" />
+</colgroup>
+<thead>
+<tr class="table-secondary">
+	<th>주문 번호</th>
+	<th>메뉴 이름</th>
+	<th>메뉴 가격</th>
+	<th>주문 개수</th>
+	<th>총 가격</th>
+	<th>주문 상태</th>
+</tr>
+</thead>
+<tr th:each="shop, i : ${dtolist}"  >
+	<th rowspan="100" th:if="${i.index}==0">[[${shop.sid}]]</th>
+	<td>[[${shop.rname}]]</td>
+	<td>[[${shop.rprice}]]</td>
+	<td>[[${shop.scount}]]</td>
+	<td>[[${shop.sprice}]]</td>
+	<td rowspan="100" th:if="${i.index}==0">
+		<p th:if="${dto.ssstate}==0">주문 완료</p>
+		<p th:if="${dto.ssstate}==1">픽업 완료</p>
+	</td>
+</tr>
+<tr>
+	<td colspan="3"></td>
+	<td><strong>[[${dto.sstotal}]]</strong></td>
+</tr>
+</table>
+
+<table class="table table-bordered">
+<colgroup>
+	<col width="16.70%" />
+	<col width="*" />
+</colgroup>
+<tr>
+	<th class="table-secondary text-center">대기번호</th><td>[[${dto.sstoday}]]</td>
+</tr>
+<tr>
+	<th class="table-secondary text-center">주문자</th>
+	<td>
+		<span th:if="${dto.cphone}=='' or ${dto.cphone}==null">비회원</span>
+		<span th:if="${dto.cphone}!='' and ${dto.cphone}!=null ">[[${dto.cphone}]]</span>
+	</td>
+</tr>
+</table>
+
+<a th:href="|@{/shop/list}?${link}|" class="text-decoration-none"><button type="button" class="btn btn-primary">목록으로</button></a>
+
+<!-- ========================================================================================== -->
+</div>
+
+<script layout:fragment="script" th:inline="javascript">
+menuActive(0)
+</script>
+
+</html>

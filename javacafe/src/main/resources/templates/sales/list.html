@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+
+<!-- Thymeleaf 이용하기위해 네임스페이스 지정하기 -->
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{layout/mainlayout.html}">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" th:href="@{/css/inven.css}">
+<title>자바 카페</title>
+
+
+
+</head>
+<body>
+<!-- ====================================================== -->
+<div layout:fragment="content">
+	
+	<div class="row mt-3">
+    	<div class="col" >
+			<div class="card" style="width: 50%; margin: 0 auto;">
+				<div class="card-header">
+                  <ion-icon name="bag-outline" class="inventory-icon"></ion-icon> Sales List
+                </div>
+                
+                <!-- invenList start -->
+			<div class="card-body" >
+				<table class="table">
+					<thead>
+                    	<tr class="inven-table">
+                        <th style="display: none" class="inven-table-item" scope="col">매출번호 (Ino)</th>
+							<th style="width: 20%" scope="col">연도</th>
+							<th style="width: 20%" scope="col">월</th>
+							<th scope="col">매출</th>
+							<th scope="col">상세보기</th>
+                        </tr>
+					</thead>
+					<tbody>								
+                        <tr class="inven-table" th:each="dto:${dto.dtoList}">
+                        <th style="display:none" class="inven-table-item" scope="row">[[${dto.sno}]]</th>
+                            
+                        	<td>[[${dto.year}]]</td>
+                        	<td>[[${dto.month}]]</td>
+                        	<td th:text="|${#numbers.formatInteger(dto.sales, 0, 'COMMA')}원|">[[${dto.sales}]]</td>
+                        	<td>
+                        	<a th:href="|@{/sales/read(sno=${dto.sno})}&${link}|" class="text-decoration-none">
+								<button type="button" class="btn btn-secondary btn-sm" >해당 월 이동</button>
+							</a>
+                        	</td>
+                        </tr>
+                       	<tr th:if="${dto.dtoList}==null">
+                       		<td colspan="4" class="inven-search-null"> 검색결과가 없습니다. <br>연도와 월을 확인해주세요.</td>
+                       	</tr>
+                       	<tr>
+							<td colspan="4" style="text-align: right;">
+							<button type="button" class="inven-register-btn" th:onclick="'location.href=\''+@{/sales/register}+'\''">매출등록</button>
+							</td>		
+                       	</tr>
+												                           	
+					</tbody>
+
+				</table>
+				
+			</div> <!-- invenlist end -->
+		</div><!-- card end -->
+	</div><!-- col end -->
+
+</div><!-- row end -->
+	<div class="inven-paging"> <!-- 페이징처리 start -->
+    	<ul class="Sales-pagination" >
+
+        	<th:block  class="" th:if="${dto.prev}">
+            	<a class="btn btn-outline-primary " th:data-num="${dto.start -1}"><</a>
+            </th:block>
+
+            <th:block th:each="i: ${#numbers.sequence(dto.start, dto.end)}">
+            	<a th:class="${dto.page == i}?'btn btn-primary active ':'btn btn-outline-primary '"  th:data-num="${i}">[[${i}]]</a>
+            </th:block>
+
+            <th:block class="" th:if="${dto.next}">
+            	<a class="btn btn-outline-primary "  th:data-num="${dto.end + 1}">></a>
+            </th:block>
+		</ul>
+	</div><!-- 페이징처리end -->
+	
+ <div>
+	<form action="/sales/list" method="get">
+		<div class="col">
+			<input type="hidden" name="size" th:value="${pageRequestDTO.size}">
+			<div class="inven-search">
+				<div>
+					<select class="inven-search-type" name="type" id="searchtype">
+						<option value="">선택</option>
+						<option value="y" th:selected="${pageRequestDTO.type =='y'}">연도</option>
+						<option value="m" th:selected="${pageRequestDTO.type =='m'}">월</option>                            
+						<option value="tm" th:selected="${pageRequestDTO.type =='ym'}">전체</option>                            
+					</select>
+				</div>
+				<input type="text" class="inven-search-keyword" name="keyword" th:value="${pageRequestDTO.keyword}" autocomplete="off" placeholder="날짜를 검색하세요.">
+				<div class="">
+					<button class="btn btn-secondary searchBtn inven-search-btn" id="search">
+						<ion-icon name="search-outline" class="inven-search-icon"></ion-icon>
+					</button>
+					<button class="btn btn-outline-secondary clearBtn" type="button">검색초기화</button>
+				</div>
+			</div><!-- 검색 inputgroup end -->
+		</div><!-- 검색 col end-->
+	</form><!-- 검색 form end -->
+</div><!-- 검색 row end -->
+
+<!-- 게시글작성후 modal알림창 -->
+    <div class="modal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modal title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>[[${result1}]]번 등록/삭제</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">확인</button>
+          
+                </div>
+            </div>
+        </div>
+    </div><!-- modal알림창 종료 -->
+
+    
+</div><!-- layout:content End -->
+
+ 
+ <!-- ====================================================== -->
+<script layout:fragment="script" th:inline="javascript">
+
+	
+	document.querySelector(".Sales-pagination").addEventListener("click",function (e) {
+		e.preventDefault()
+		e.stopPropagation()
+		const target = e.target
+		if(target.tagName !== 'A'){
+		return
+		}
+		
+		const num = target.getAttribute("data-num")
+		const formObj = document.querySelector("form")
+		formObj.innerHTML += `<input type='hidden' name='page' value='${num}'>`
+		formObj.submit();
+	},false)
+	
+	//검색 기능초기화(첫페이지로 가기)
+	document.querySelector(".clearBtn").addEventListener("click",function (e){
+	e.preventDefault()
+	e.stopPropagation()
+	
+	self.location ='/sales/list'
+	},false)
+	
+	//show moda
+	const result = [[${result1}]]
+	const modal = new bootstrap.Modal(document.querySelector(".modal"))
+	if(result){
+		modal.show()
+	}
+	
+	//검색타입 선택x 검색못하게만들기
+	var type = document.querySelector("#searchtype");
+	
+	document.querySelector("#search").addEventListener("click",function (e){
+		
+		if(type.value ==""){
+		alert('검색타입을 지정해주세요')
+		document.querySelector("#searchtype").focus();
+		event.preventDefault();
+		} 
+		formObj.submit();
+		
+	})
+	
+
+	
+	
+</script>	
+</body>
+</html>
+ 

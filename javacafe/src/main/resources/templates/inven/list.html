@@ -29,6 +29,7 @@
 					<thead>
                     	<tr class="inven-table">
                         	<th class="inven-table-item" scope="col">상품번호(Ino)</th>
+							<th scope="col">상품사진(Iimg)</th>
 							<th scope="col">상품명(Iname)</th>
                         	<th scope="col">상품가격(Iprice)</th>
                         	<th scope="col">상품설명(Icontent)</th>
@@ -43,10 +44,17 @@
                         <tr class="inven-table" th:each="dto:${dto.dtoList}">
                             <th class="inven-table-item" scope="row">[[${dto.ino}]]</th>
                             <td>
+                            <img th:if="${dto.iimg} != '' and ${dto.iimg}  != null" th:src="|/view/${dto.iimg}|" class="inven-img"/>
+                           	<img th:if="${dto.iimg} == '' or ${dto.iimg} == null " src="/img/noimg.jpg" class="inven-img" />
+                           		</td>
+                                  
+                            <td>
                                 <a th:href="|@{/inven/read(ino =${dto.ino})}&${link}|"> [[${dto.iname}]] </a>
                             </td>
-                            <td>[[${dto.iprice}]]원</td>
-                            <td>[[${dto.icontent}]]</td>
+
+							<td th:text="|${#numbers.formatInteger(dto.iprice, 0, 'COMMA')}원|">[[${dto.iprice}]]</td>
+							
+                            <td id="iprice">[[${dto.icontent}]]</td>
                             <td>[[${dto.icount}]]개</td>
                             <td>[[${dto.iclass}]]</td>
                             <td>[[${#temporals.format(dto.iregDate, 'yyyy-MM-dd HH:mm:ss')}]]</td>
@@ -57,10 +65,10 @@
                             <td class="inven-table-item" th:if="${dto.istate} == 0">출고됨</td>
                         </tr>
                        	<tr th:if="${dto.dtoList}==null">
-                       		<td colspan="9" class="inven-search-null"> 검색결과가 없습니다. <br>상품명과 상품분류를 확인해주세요.</td>
+                       		<td colspan="10" class="inven-search-null"> 검색결과가 없습니다. <br>상품명과 상품분류를 확인해주세요.</td>
                        	</tr>
                        	<tr>
-							<td colspan="9" style="text-align: right;">
+							<td colspan="10" style="text-align: right;">
 							<button type="button" class="inven-register-btn" th:onclick="'location.href=\''+@{/inven/register}+'\''">상품등록</button>
 							</td>		
                        	</tr>
@@ -95,7 +103,7 @@
 			<input type="hidden" name="size" th:value="${pageRequestDTO.size}">
 			<div class="inven-search">
 				<div>
-					<select class="inven-search-type" name="type">
+					<select class="inven-search-type" name="type" id="searchtype">
 						<option value="">선택</option>
 						<option value="n" th:selected="${pageRequestDTO.type =='n'}">상품명</option>
 						<option value="c" th:selected="${pageRequestDTO.type =='c'}">상품분류</option>                            
@@ -104,7 +112,7 @@
 				</div>
 				<input type="text" class="inven-search-keyword" name="keyword" th:value="${pageRequestDTO.keyword}" autocomplete="off" placeholder="검색할 상품명 또는 상품분류를 입력하세요">
 				<div class="">
-					<button class="btn btn-secondary searchBtn inven-search-btn" type="submit">
+					<button class="btn btn-secondary searchBtn inven-search-btn" id="search">
 						<ion-icon name="search-outline" class="inven-search-icon"></ion-icon>
 					</button>
 					<button class="btn btn-outline-secondary clearBtn" type="button">검색초기화</button>
@@ -137,6 +145,8 @@
 </div><!-- layout:content End -->
  <!-- ====================================================== -->
 <script layout:fragment="script" th:inline="javascript">
+ 
+ 
 	document.querySelector(".inven-pagination").addEventListener("click",function (e) {
 		e.preventDefault()
 		e.stopPropagation()
@@ -156,7 +166,7 @@
 	e.preventDefault()
 	e.stopPropagation()
 	
-	self.location ='/board/list'
+	self.location ='/inven/list'
 	},false)
 	
 	//show moda
@@ -166,7 +176,23 @@
 		modal.show()
 	}
 	
+	//검색타입 선택x 검색못하게만들기
+	var type = document.querySelector("#searchtype");
 	
+	document.querySelector("#search").addEventListener("click",function (e){
+		
+		if(type.value ==""){
+		alert('검색타입을 지정해주세요')
+		document.querySelector("#searchtype").focus();
+		event.preventDefault();
+		} 
+		formObj.submit();
+		
+	})
+	
+
+	
+
 </script>	
 </body>
 </html>

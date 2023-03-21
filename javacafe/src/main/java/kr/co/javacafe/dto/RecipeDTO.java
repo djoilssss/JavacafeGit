@@ -39,7 +39,7 @@ public class RecipeDTO {
 	private String rimg;
 	private int rstate;
 	private LocalDateTime regDate;
-	private Timestamp modDate;
+	private LocalDateTime modDate;
 	
 	// 파일
 	private MultipartFile file;

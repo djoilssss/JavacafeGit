@@ -12,12 +12,12 @@
         <div class="col">
             <div class="card">
                 <div class="card-header">
-                    고객 정보 수정
+                   <h3>" [[${dto.cname}]] " 님 정보 수정</h3>
                 </div>
                 <div class="card-body">
                     <form th:action="@{/customer/modify}" method="post" id="f1">
                         <div class="input-group mb-3">
-                            <span class="input-group-text">고객 번호</span>
+                            <span class="input-group-text">회원 번호</span>
                             <input type="text" class="form-control" th:value="${dto.cno}" name="cno" readonly>
                         </div>
                         <div class="input-group mb-3">
@@ -36,13 +36,10 @@
                         </div>
 
                         <div class="input-group mb-3">
-                            <span class="input-group-text">등록된 날짜</span>
+                            <span class="input-group-text">회원가입 날짜</span>
                             <input type="text" class="form-control" th:value="${#temporals.format(dto.regDate, 'yyyy-MM-dd HH:mm:ss')}" readonly>
                         </div>
-                        <div class="input-group mb-3">
-                            <span class="input-group-text">수정된 날짜</span>
-                            <input type="text" class="form-control" th:value="${#temporals.format(dto.modDate, 'yyyy-MM-dd HH:mm:ss')}" readonly>
-                        </div>
+                        
 
                         <div class="my-4">
                             <div class="float-end">

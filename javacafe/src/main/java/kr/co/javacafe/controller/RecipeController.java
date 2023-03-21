@@ -1,21 +1,12 @@
 package kr.co.javacafe.controller;
 
-import java.io.File;
-import java.nio.file.Files;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -23,9 +14,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import kr.co.javacafe.dto.PageRequestDTO;
 import kr.co.javacafe.dto.PageResponseDTO;
 import kr.co.javacafe.dto.RecipeDTO;
+import kr.co.javacafe.service.InvenService;
 import kr.co.javacafe.service.RecipeService;
 import lombok.RequiredArgsConstructor;
-import lombok.val;
 import lombok.extern.log4j.Log4j2;
 
 @Controller
@@ -35,6 +26,7 @@ import lombok.extern.log4j.Log4j2;
 public class RecipeController {
 	
 	private final RecipeService recipeService;
+	private final InvenService invenService;
 
 	@GetMapping("/list")
 	public void list(PageRequestDTO pageRequestDTO, Model model) {
@@ -111,6 +103,16 @@ public class RecipeController {
 		// 개행 문자 넘기기
 		String nlString = System.getProperty("line.separator").toString();
 		model.addAttribute("nlString", nlString);
+		model.addAttribute("invenlist", invenService.getAll());
+	}
+	
+	@PostMapping("/remove")
+	public String remove(Long rno, RedirectAttributes redirectAttributes) {
+		log.info("remove record : "+rno);
+		recipeService.remove(rno);
+		redirectAttributes.addFlashAttribute("result", "removed");
+		return "redirect:/recipe/list";
+		
 	}
 	
 

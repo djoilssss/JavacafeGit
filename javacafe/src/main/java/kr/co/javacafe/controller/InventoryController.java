@@ -1,7 +1,9 @@
 package kr.co.javacafe.controller;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -50,8 +52,8 @@ public class InventoryController {
 		}
 		
 		@PostMapping("/register")
-		public String registerPost(@Valid InventoryDTO inventoryDTO, BindingResult bindingResult, 
-				RedirectAttributes redirectAttributes) {
+		public String registerPOST(@Valid InventoryDTO inventoryDTO, BindingResult bindingResult, 
+				RedirectAttributes redirectAttributes, HttpServletRequest request) {
 			log.info("inven POST register==============");
 			
 			if(bindingResult.hasErrors()) { //오류 발생할경우
@@ -64,12 +66,13 @@ public class InventoryController {
 			
 			//정상적으로 생성될경우
 			log.info(inventoryDTO);
-			long ino = invenService.register(inventoryDTO);
+			long ino = invenService.register(inventoryDTO, request);
 			redirectAttributes.addFlashAttribute("result1",ino);
 			return "redirect:/inven/list";
 		}
 		
 		//게시글 상세보기(조회) + 수정
+		@PreAuthorize("isAuthenticated()")
 		@GetMapping({"/read","/modify"})
 		public void read(long ino, PageRequestDTO pageRequestDTO, Model model) {
 			
@@ -81,10 +84,11 @@ public class InventoryController {
 		
 		//게시글 수정 post
 		@PostMapping("/modify")
-		public String modify(PageRequestDTO pageRequestDTO,
+		public String modifyPOST(PageRequestDTO pageRequestDTO,
 							@Valid InventoryDTO inventoryDTO,
 							BindingResult bindingResult,
-							RedirectAttributes redirectAttributes) {
+							RedirectAttributes redirectAttributes,
+							HttpServletRequest request) {
 			log.info("inventory modify post================>" + inventoryDTO);
 			
 			//오류발생시
@@ -92,6 +96,7 @@ public class InventoryController {
 				log.info("has errors===============");
 				String link = pageRequestDTO.getLink(); //url고정
 				//에러발생시 모든 에러는 errors라는 이름으로 수정페이지로 이동시킴
+				
 				redirectAttributes.addFlashAttribute("errors",bindingResult.getAllErrors());
 				redirectAttributes.addAttribute("ino", inventoryDTO.getIno());
 				
@@ -102,7 +107,7 @@ public class InventoryController {
 				
 				
 			//수정메소드
-			invenService.modify(inventoryDTO);
+			invenService.modify(inventoryDTO, request);
 			redirectAttributes.addFlashAttribute("result2", "modified");
 			redirectAttributes.addAttribute("ino",inventoryDTO.getIno());
 			
@@ -112,7 +117,7 @@ public class InventoryController {
 		
 		//삭제 처리
 		@PostMapping("/remove")
-		public String remove(long ino, RedirectAttributes redirectAttributes) {
+		public String removePOST(long ino, RedirectAttributes redirectAttributes) {
 			log.info("remove post================== " + ino);
 			invenService.remove(ino);
 			redirectAttributes.addFlashAttribute("result3","removed");

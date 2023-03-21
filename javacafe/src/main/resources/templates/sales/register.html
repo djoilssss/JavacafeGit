@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+
+<!-- Thymeleaf 이용하기위해 네임스페이스 지정하기 -->
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	  layout:decorate="~{layout/mainlayout.html}">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" th:href="@{/css/inven.css}">
+<title>자바 카페</title>
+
+
+
+</head>
+<body>
+<!-- ====================================================== -->
+<div layout:fragment="content">
+	
+	<div class="inven-register">
+		<div class="col">
+			<div class="card">
+				<div class="card-header">
+					 <ion-icon name="bag-outline" class="inventory-icon"></ion-icon> Inventory Register
+				</div>
+				<div class="card-body">
+					<form action="/sales/register" method="post" id="f1" >
+						<div class="input-group mb-3">
+							<span class="inven-input-group">연도</span>
+							<select name="year" id="year" class="form-control">
+							</select>						
+						</div>
+					
+											
+						<div class="input-group mb-3">
+							<span class="input-group-text">월</span>							
+							<select name="month" id="month" class="form-control">
+					
+							</select>
+						</div>
+						
+						<div class="input-group mb-3">
+							<span class="input-group-text">매출</span>							
+							<input type="text"  id="sales" name="sales" class="form-control" placeholder="매출을 입력하세요">
+						</div>
+
+						
+						<!-- 입력form end -->
+						<div class="my-4">
+							<div class="float-end">
+								<button type="submit" class="btn btn-primary regBtn">작성완료</button>
+								<button type="button" class="btn btn-secondary listBtn">목록</button>
+							</div>
+						</div>					
+					</form>
+						<!-- 등록form 종료 -->						
+				</div>
+			</div> <!-- end card body -->
+		</div><!-- end card -->
+	</div><!-- end col -->
+</div><!-- layout:content End -->
+<!-- ====================================================== -->
+<script layout:fragment="script" th:inline="javascript">
+  const errors = [[${errors}]]
+  console.log(errors)
+
+  let errorMsg = ''
+
+  if(errors){
+    for (let i = 0; i < errors.length; i++) {
+      errorMsg += `${errors[i].field}은(는) ${errors[i].code} \n`
+    }
+    alert(errorMsg)
+  }
+  	//등록	
+	const formObj = document.querySelector("#f1")
+
+	
+	document.querySelector(".regBtn").addEventListener("click", function(e){
+	e.preventDefault()
+	e.stopPropagation()
+	
+	
+	// ,로 보여지는 iprice 값 찾아서 uncomma에 담기
+	 var input_value = document.getElementById('sales');
+	 input_value.value = uncomma(input_value.value);
+	 
+	 //uncomma에 담긴 str -> int로 변환하기
+	function uncomma(str) { 
+	    str = "" + str.replace(/,/gi, ''); // 콤마 제거 
+	    str = str.replace(/(^\s*)|(\s*$)/g, ""); // trim()공백,문자열 제거 
+	    return (new Number(str));//문자열을 숫자로 반환
+	}
+	
+	formObj.action = `/sales/register`
+	formObj.method = 'post'
+	formObj.submit()
+	},false)
+  	
+  	//목록으로 이동
+	document.querySelector(".listBtn").addEventListener("click", function(e){
+	e.preventDefault()
+	e.stopPropagation()
+
+	self.location =`/sales/list`
+	}, false)
+  
+  
+  //1000단위 콤마찍어주기
+document.getElementById("sales").addEventListener('input', (e) => {
+  const i = e.target;
+  const startPosition = i.value.length - i.selectionEnd;
+  i.value = i.value.replace(/^0+|\D+/g, '').replace(/(\d)(?=(?:\d{3})+(?!\d))/g, '$1,');
+  const len = Math.max(i.value.length - startPosition, 0);
+  i.setSelectionRange(len, len);
+});
+
+
+//페이지 로드될시 연/월 나타내기
+window.onload = function(){ 
+	setDateBox1();
+};
+
+//해당년도 이상으로 안나오게 설정하기
+function setDateBox1(){
+    var dt = new Date();
+    var year = dt.getFullYear();
+    var month = dt.getMonth()+1;
+
+    for(var y = year; y >= year-5; y--){
+        var option = document.createElement("option");
+        option.value = y;
+        option.textContent = y + "년";
+        if(year == y) {
+            option.selected = true;
+        }
+        document.querySelector("#year").appendChild(option);
+    }
+    for(var i = 1; i <= 12; i++){
+        var option = document.createElement("option");
+        option.value = i;
+        option.textContent = i + "월";
+        if(month == i) {
+            option.selected = true;
+        }
+        document.querySelector("#month").appendChild(option);
+    }
+}
+
+</script>	
+</body>
+</html>
+ 
