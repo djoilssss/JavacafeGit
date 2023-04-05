@@ -50,5 +50,10 @@ public class ShopServiceImpl implements ShopService {
 		List<ShopJoinDTO> dtolist = shopRepository.findBySidJoin(sid);
 		return dtolist;
 	}
+
+	@Override
+	public List<ShopJoinDTO> getBest() {
+		return shopRepository.findBest();
+	}
 	
 }

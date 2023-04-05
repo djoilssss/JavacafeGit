@@ -6,53 +6,57 @@
 <title>고객 정보 작성</title>
 </head>
 <body>
-<main class="mainbg" layout:fragment="content">
-	
- 
-          <form role="form" method="POST" action="/customer/register">
-		<table width="100%" border="1">
-			<div class="container text-left">
-			<h4><b>신규 회원 가입</b></h4>
+
+	<div layout:fragment="content">
+    <div class="row mt-3">
+        <div class="col">
+            <div class="card">
+            <div class="card-header">
+			<h4 style="color:#996633;"><b>신규 회원 가입</b></h4>
 			</div>
+       		<form role="form" method="POST" action="/customer/register">
+			<table width="100%" border="1">
 			<br>
-			
 				<tr>
 					<td>	
 					<br>			
-					<div class="container text-left">
-						<label><h5><b>고객이름</b></h5></label>
+					<div class="card-body">
+						<label><h5 style="color:#996633;"><b>고객이름</b></h5></label>
 						<input type="text" name="cname"  class="form-control" placeholder="이름을 입력해 주세요." required size="1" style="border-radius: 5px; border:1px solid #ccc; width: 50%">
-					</div>
+					
 					<br>
 					
-					<div class="container text-left">
-						<label><h5><b>전화번호</b></h5></label>
+					
+						<label><h5 style="color:#996633;"><b>전화번호</b></h5></label>
 						<input type="text"  class="form-control" name="cphone" placeholder="예 ) 010-0000-0000" required size="1" style="border-radius: 5px; border:1px solid #ccc; width: 50%">
-					</div>
+					
 					<br>
 					
-					<div class="container text-left">
-						<label><h5><b>포인트</b></h5></label>
+					
+						<label><h5 style="color:#996633;"><b>포인트</b></h5></label>
 						<input type="text" value="0" class="form-control" name="cpoint" placeholder="0" required size="1" style="border-radius: 5px; border:1px solid #ccc; width: 50%" readonly>
-					</div>
+					
 					<br>
+					</div>
 					</td>
 				</tr>
-					<br>
-		
-			
 		</table>
-			<br>
-			<br>
+			  <div class="card-body">
 			  <table>
 				 <tr>
 					<td><button type="submit" class="btn btn-outline-dark btn-block"><b>등록</b></button></td>
 				</tr>
 			</table>
+				</div>
 		</form>   
+		
+  </div>
+  </div>
+  </div>
+  </div>
   
   
-</main>
+
 
 <script layout:fragment="script" th:inline="javascript">
 

@@ -2,9 +2,18 @@ package kr.co.javacafe.dto;
 
 import java.time.LocalDateTime;
 
+import org.springframework.web.multipart.MultipartFile;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ShopJoinDTO {
 	private Long sno;
 	private String sid;
@@ -25,4 +34,7 @@ public class ShopJoinDTO {
 	private int rkcal;
 	private String rimg;
 	private int rstate;
+	
+	private Long cnt;
+	private Long totalCount;
 }

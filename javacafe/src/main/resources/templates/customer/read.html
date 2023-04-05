@@ -11,7 +11,7 @@
         <div class="col">
             <div class="card">
                 <div class="card-header">
-                	<h3>[[${dto.cname}]] 님의 정보</h3>
+                	<h3 style="color:#996633;">[[${dto.cname}]] 님의 정보</h3>
                 	
                 </div>
                 <div class="card-body">
@@ -57,102 +57,49 @@
 	        <div class="col">
 	            <div class="card">
 				     <form action="/customer/modify2" method="post">
-			                <div class="card-body">
-			                    <div class="input-group mb-3">
-			                        
-			                        <input type="hidden" name="cno" class="form-control" th:value="${dto.cno}" readonly>
-			                    </div>
-			                    <div class="input-group mb-3">
-			                        
-			                        <input type="hidden" class="form-control" th:value="${dto.cname}" readonly>
-			                    </div>
-			
-			                    <div class="input-group mb-3">
-			                        
-			                        <input type="hidden" class="form-control" th:value="${dto.cphone}" readonly>
-			                    </div>
-			
-			                    <div class="input-group mb-3">
-			                        
-			                        <input type="hidden" class="form-control" th:value="${dto.cpoint}" readonly>
-			                    </div>
-			                    <div class="input-group mb-3">
-			                        
-			                        <input type="hidden" class="form-control" th:value="${#temporals.format(dto.modDate, 'yyyy-MM-dd HH:mm:ss')}" readonly>
-			                    </div>
-			               </div>
+			              <div class="card-body">
+		                        <input type="hidden" name="cno" class="form-control" th:value="${dto.cno}" readonly>
+		                        <input type="hidden" class="form-control" th:value="${dto.cname}" readonly>
+		                        <input type="hidden" class="form-control" th:value="${dto.cphone}" readonly>
+		                        <input type="hidden" class="form-control" th:value="${dto.cpoint}" readonly>
+		                        <input type="hidden" class="form-control" th:value="${#temporals.format(dto.modDate, 'yyyy-MM-dd HH:mm:ss')}" readonly>
+			            	<h4 style="color:#996633;"><b>포인트 적립</b></h4><br>
 			               <div class="input-group mb-3">
 		                        <span class="input-group-text" >결제 금액을 입력하세요</span>
 			                    <input id="point" type="text"/>
 			                    <button type="button" onclick="pointadd()">포인트적립</button>
                            </div>
-			               <div>
-								<span>적립될 포인트</span>
+			               <div class="input-group mb-3">
+								<span class="input-group-text">적립될 포인트</span>
 								<input id="pt" name="cpoint"/>
 								<button type="submit">포인트적용</button>                   
 			               </div>
+			               </div>
 					</form>
-				
-	
-	
+				<hr>	
                <form action="/customer/modify3" method="post">
-                <div class="card-body">
-                    <div class="input-group mb-3">
-                        
+               		 <div class="card-body">
                         <input type="hidden" name="cno" class="form-control" th:value="${dto.cno}" readonly>
-                    </div>
-                    <div class="input-group mb-3">
-                        
                         <input type="hidden" class="form-control" th:value="${dto.cname}" readonly>
-                    </div>
-
-                    <div class="input-group mb-3">
-                       
                         <input type="hidden" class="form-control" th:value="${dto.cphone}" readonly>
-                    </div>
-
-                    <div class="input-group mb-3">
-                        
                         <input type="hidden" class="form-control" th:value="${dto.cpoint}" readonly>
-                    </div>
-                    <div class="input-group mb-3">
-                        
                         <input type="hidden" class="form-control" th:value="${#temporals.format(dto.modDate, 'yyyy-MM-dd HH:mm:ss')}" readonly>
-                    </div>
-				</div>
+				<h4 style="color:#996633;"><b>포인트 차감</b></h4><br>
 					<div class="input-group mb-3">
                   		<span class="input-group-text" >차감 금액을 입력하세요</span>
                  		<input id="pointt" type="text"/>
                   		<button type="button" onclick="pointsub()">포인트차감</button>
-                  		               		</div>
-            	    <div>
-                  	<span>차감후 포인트</span>
-                  	<input id="ptt" name="cpoint"/>
-                  	<button type="submit">포인트적용</button>             		
                   	</div>
+            	    <div class="input-group mb-3">
+                  		<span class="input-group-text">차감후 포인트</span>
+                  		<input id="ptt" name="cpoint"/>
+                  		<button type="submit">포인트적용</button>             		
+                  	</div>
+					</div>
 					</form>
 			</div>
 		</div>
 	</div>
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     <!-- end 적립 ,차감 -->
     <!-- 모달 창 start -->    
 	<div class="modal" tabindex="-1">

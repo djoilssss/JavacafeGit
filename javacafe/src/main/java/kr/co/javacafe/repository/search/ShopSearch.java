@@ -7,4 +7,6 @@ import kr.co.javacafe.dto.ShopJoinDTO;
 public interface ShopSearch {
 
 	List<ShopJoinDTO> findBySidJoin(String sid);
+	
+	List<ShopJoinDTO> findBest();
 }
